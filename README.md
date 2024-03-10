@@ -32,7 +32,7 @@ This course covers various aspects of cryptanalysis, including historical cipher
    ```bash
    pip install -r requirements.txt
    ```
-3. Verify Rust installation and toolchain:
+3. Verify Rust installation and toolchain: >= 1.75.0
    ```bash
    rustc --version
    ```
