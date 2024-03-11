@@ -1,7 +1,7 @@
 UpAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 LowAlphabet = 'abcdefghijklmnopqrstuvwxyz'
 
-plain_msg = 'This is a plaintext message to be encrypted.'
+plain_msg = 'This is a sample text 2024'
 key = 3 
 
 # Encryption
@@ -22,7 +22,7 @@ print('PLAINTEXT = ', plain_msg)
 print('CIPHERTEXT = ', cipher_msg)
 
 # Decryption
-ciphertext = "Wklv lv d sodlqwhaw phvvdjh wr eh hqfubswhg."
+ciphertext = "Wklv lv d vdpsoh whaw 2024"
 recovered_msg = ""
 for symbol in ciphertext :
     if symbol in UpAlphabet:

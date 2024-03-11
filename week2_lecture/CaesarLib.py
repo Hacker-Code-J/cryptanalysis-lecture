@@ -30,3 +30,16 @@ def caesar_decrypt(key, cipher_msg):
         else:
             recovered_msg = recovered_msg + symbol
     return recovered_msg
+
+def test():
+    plain_msg = 'This is a sample text 2024'
+    key = 3 
+    cipher_msg = caesar_encrypt(key, plain_msg)
+    recovered_msg = caesar_decrypt(key, cipher_msg)
+
+    print('PLAINTEXT = ', plain_msg)
+    print('CIPHERTEXT = ', cipher_msg)
+    print('PLAINTEXT = ', recovered_msg)
+    
+if __name__ == "__test()__":
+    test()
