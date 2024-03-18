@@ -1,0 +1,18 @@
+What is Caesar cipher? Is it secure?
+
+The Caesar cipher is a simple encryption technique that is named after Julius Caesar, 
+who is said to have used it to communicate with his generals. 
+It is a substitution cipher that works by shifting each letter of the plaintext message 
+a certain number of places down the alphabet.
+
+For example, with a shift of 3, A would be replaced by D, B would become E, and so on. 
+The method is based on the alphabetic position of a letter, 
+for instance, A=0, B=1, and so on, and each letter is shifted by the amount specified in the key.
+
+While the Caesar cipher is a straightforward encryption technique, 
+it is not considered to be secure because it is easily broken with a brute-force attack. 
+With only 26 possible keys (one for each letter of the alphabet), 
+a computer can quickly try each one until it finds the correct decryption key. 
+The Caesar cipher is, therefore, not suitable for encrypting sensitive information.
+
+(from OpenAI ChatGPT)
