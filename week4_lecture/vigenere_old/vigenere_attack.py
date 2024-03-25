@@ -1,4 +1,4 @@
-import VigenereLib, CaesarLib
+import VigenereLib, week4_lecture.vigenere_old.CaesarLib as CaesarLib
 import os, sys
 import EngDicLib
 
@@ -42,9 +42,9 @@ for key_pos in range(1,keylen_candidate):
             max_ic = sub_ic
             key_ch_candidate = key_ch
             
-        # print('key_ch =', key_ch, ':', end='')
-        # print('sub_msg', sub_msg[:10],"...", '( length =', len(sub_msg), ')\t', end='')
-        # print('IC(sub_msg)= %6.4f' %(sub_ic))
+        print('key_ch =', key_ch, ':', end='')
+        print('sub_msg', sub_msg[:10],"...", '( length =', len(sub_msg), ')\t', end='')
+        print('IC(sub_msg)= %6.4f' %(sub_ic))
 print('key[%d] : key_ch_candidate = %d' %(key_pos, key_ch_candidate))
 
 key_0_candidate = -1
@@ -77,3 +77,5 @@ if key_0_candidate >= 0:
     OutFileObj = open(out_file, 'w')
     OutFileObj.write(rightPT)
     OutFileObj.close()
+'''
+'''
