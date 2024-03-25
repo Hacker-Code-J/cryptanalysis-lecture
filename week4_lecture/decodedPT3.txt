@@ -1,0 +1,56 @@
+>> Could you tell us how to become a famous cryptanalyst? 
+
+Becoming a famous cryptanalyst requires a combination of knowledge, skills, experience, and recognition. 
+Here are some steps that may help you on your journey to becoming a famous cryptanalyst:
+
+1. Study Mathematics and Computer Science: 
+Cryptography is a mathematical and computational field, 
+so it is important to have a strong foundation in both mathematics and computer science. 
+It is recommended to obtain a degree in a related field.
+
+2. Learn Cryptography: 
+There are many resources available for learning cryptography, 
+such as books, online courses, and tutorials. 
+Familiarize yourself with encryption algorithms, cryptographic protocols, and other cryptographic concepts.
+
+3. Practice Cryptanalysis: 
+Cryptanalysis is the process of breaking cryptographic codes and ciphers. 
+Practice breaking different types of codes and ciphers to hone your skills. 
+You can find challenges and competitions online to test and improve your abilities.
+
+4. Stay Up-to-Date with Cryptographic Developments: 
+Cryptography is a constantly evolving field, 
+with new techniques and vulnerabilities being discovered regularly. 
+Stay informed about the latest developments by reading research papers, attending conferences, and following industry experts.
+
+5. Build a Portfolio: 
+Create a portfolio of your work and accomplishments in cryptography and cryptanalysis. 
+This can include papers you have written, challenges you have solved, and any relevant projects or research you have done.
+
+6. Network with Other Cryptographers: 
+Attend conferences and meetups to network with other cryptographers and industry experts. 
+This can help you learn from others, stay up-to-date on industry developments, and build your professional network.
+
+7. Get Recognized: 
+Publish papers, present at conferences, and participate in competitions to gain recognition in the field. 
+Building a reputation as a skilled and knowledgeable cryptographer can help you become famous in the industry.
+
+Keep in mind that becoming a famous cryptanalyst requires 
+dedication, hard work, and a lifelong commitment to learning and improving your skills.
+
+
+>> Thanks. As an undergraduate student, which is the most important among your suggestions?
+
+As an undergraduate student, 
+the most important suggestion would be to focus on studying mathematics and computer science. 
+These are the foundational subjects that are essential for understanding cryptography and cryptanalysis. 
+It is important to have a strong understanding of mathematical concepts 
+such as number theory, abstract algebra, and probability theory, 
+as well as computer science concepts such as algorithms and data structures. 
+By having a strong foundation in these subjects, 
+you will be well-prepared to learn cryptography and cryptanalysis in-depth. 
+Additionally, it is also recommended to start practicing cryptanalysis 
+and building a portfolio of your work to gain hands-on experience 
+and to start networking with other cryptographers in the field.
+
+(from OpenAI ChatGPT)
