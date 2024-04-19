@@ -1,0 +1,67 @@
+\section*{Test}
+
+\section*{Python Example}
+\begin{python}[How to calculate a factorial](style=one-dark){colback=gray!40!black,colframe=blue!50}
+def factorial(n):
+product=1                   # Start with $1$
+for k in range(2,n+1):      # For each $k=2,3,\ldots,n$,
+product*=k              # Multiply by $k$
+return product
+\end{python}
+%\begin{lstlisting}[style=python, caption={A simple Python function}]
+%# This function prints "Hello, World!"
+%def say_hello():
+%print("Hello, World!")
+%\end{lstlisting}
+
+\section*{Terminal Example}
+\begin{lstlisting}[style=terminalstyle, caption={Simulating a terminal command}]
+user@host:~$ echo "Hello, World!"
+Hello, World!
+\end{lstlisting}
+\newpage
+\section{Time Memory Trade Off (TMTO) Attack}
+A TMTO attack is typically described in the context of finding the secret key $k$ used in a cryptographic function $f$. The function $f$ is assumed to be a block cipher or a cryptographic hash function.
+
+\subsection*{Setup}
+Consider a cryptographic function $f: \mathcal{K}\times\mathcal{M} \rightarrow \mathcal{C}$, where $\mathcal{K}$ is the key space, $\mathcal{M}$ is the message space and $\mathcal{C}$ is the cipher space. The goal is to invert $f$ given $f(k)$, i.e., to find $k$ when $f(k)$ is known. 
+
+\subsection*{Precomputation Phase}
+In the precomputation phase, a series of computations are performed to create a trade-off between the computation time and memory usage:
+
+\begin{enumerate}
+	\item Select a subset of keys $\{k_1, k_2, \dots, k_t\} \subset \mathcal{K}$.
+	\item Compute $f(k_i)$ for each $k_i$.
+	\item Store the pairs $(k_i, f(k_i))$ in a table called the \textbf{precomputed table}.
+\end{enumerate}
+
+This table is used to accelerate the recovery of $k$ by storing potential outputs and their corresponding inputs.
+
+\subsection*{Recovery Phase}
+Given a ciphertext $c$, the attacker attempts to find $k$ such that $f(k) = c$:
+
+\begin{enumerate}
+	\item For each potential key $k'$, compute $f(k')$.
+	\item Check if $f(k')$ exists in the precomputed table.
+	\item If a match is found, i.e., $f(k') = f(k_i)$ for some $i$, retrieve $k_i$.
+\end{enumerate}
+
+\subsection*{Complexity Analysis}
+The effectiveness of a TMTO attack depends on the sizes of the key space $\mathcal{K}$, the cipher space $\mathcal{C}$, and the table:
+
+\begin{itemize}
+	\item \textbf{Memory Requirement:} Proportional to the number of entries $t$ in the table.
+	\item \textbf{Time Complexity:} Proportional to $\frac{|\mathcal{K}|}{t}$, assuming uniform distribution and independent choices of $k_i$.
+\end{itemize}
+
+\subsection*{Example: Hellman's TMTO}
+Hellman's approach involves structuring the precomputed table in chains where each chain starts from a randomly chosen initial value $k_0$ and is constructed as follows:
+
+\begin{align*}
+	k_1 &= f(k_0), \\
+	k_2 &= f(f(k_0)), \\
+	&\vdots \\
+	k_t &= f^{(t)}(k_0),
+\end{align*}
+
+where $f^{(t)}$ denotes the $t$-th application of $f$. Only $k_0$ and $k_t$ are stored, reducing memory usage but requiring more time in the recovery phase to reconstruct chains.
