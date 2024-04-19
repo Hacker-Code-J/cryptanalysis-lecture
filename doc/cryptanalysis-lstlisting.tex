@@ -6,6 +6,7 @@
 \definecolor{darkgray}{rgb}{0.4,0.4,0.4}
 \definecolor{pygreen}{HTML}{8DC379}       % Python comments
 \definecolor{pyblue}{HTML}{61AFAF}    % Python keywords
+\definecolor{pyred}{HTML}{C86B73}
 \definecolor{lightgray}{rgb}{0.95,0.95,0.95}  % Background color
 \definecolor{terminalorange}{rgb}{0.9,0.5,0} % Terminal prompt
 \tcbuselibrary{minted} % tcolorbox minted library, required to use the "minted" tcb listing engine (this library is not loaded by the option [most])
@@ -99,7 +100,16 @@
 %}
 
 % Terminal style for highlighting
-\lstdefinestyle{terminalstyle}{
+\lstdefinestyle{terminal}{
+	literate=
+	{\$}{{\textcolor{pyblue}{$\boldsymbol{\$}$}}}1
+%	{>}{{\textcolor{pygreen}{$\boldsymbol{>}$}}}1
+%	{<}{{\textcolor{pygreen}{$\boldsymbol{<}$}}}1
+	{@}{{\textcolor{pyblue}{@}}}1
+	{~}{{\textcolor{pyblue}{$\boldsymbol{\sim}$}}}1
+	{:}{{\textcolor{pyblue}{:}}}1,
+	keywordstyle=[2]{\bfseries\color{pyred}},
+	morekeywords=[2]{user, host},
 	backgroundcolor=\color{black},
 	basicstyle=\footnotesize\ttfamily\color{white},
 	breakatwhitespace=false,
