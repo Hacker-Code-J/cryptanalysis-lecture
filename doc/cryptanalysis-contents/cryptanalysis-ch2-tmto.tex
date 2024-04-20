@@ -1,0 +1,114 @@
+\begin{note}[Hellman's Table]
+\ \begin{table}[h!]\centering
+\begin{tabular}{@{\extracolsep{\fill}}rcl}
+	Memory & $m\times l$ & $m$ pairs per $l$ tables \\
+	Complexity & $t\times l$ & $t$ length per $l$ tables
+\end{tabular}
+\end{table}
+\begin{center}\begin{tikzcd}
+		{SP_1=X_{1,0}} \arrow[r] & {X_{1,1}} \arrow[r] & {X_{1,2}} \arrow[r] & \cdots \arrow[r] & {X_{1,t-1}} \arrow[r] & {X_{1,t}=EP_1} \\
+		{SP_2=X_{2,0}} \arrow[r] & {X_{2,1}} \arrow[r] & {X_{2,2}} \arrow[r] & \cdots \arrow[r] & {X_{2,t-1}} \arrow[r] & {X_{2,t}=EP_2} \\
+		{SP_i=X_{i,0}} \arrow[r] & {X_{i,1}} \arrow[r] & {X_{i,2}} \arrow[r] & \cdots \arrow[r] & {X_{i,t-1}} \arrow[r] & {X_{i,t}=EP_i} \\
+		{SP_m=X_{m,0}} \arrow[r] & {X_{m,1}} \arrow[r] & {X_{m,2}} \arrow[r] & \cdots \arrow[r] & {X_{m,t-1}} \arrow[r] & {X_{m,t}=EP_m}
+	\end{tikzcd}
+\end{center}
+\end{note}
+
+\section{Time Memory Trade Off (TMTO) Attack}
+A TMTO attack is typically described in the context of finding the secret key $k$ used in a cryptographic function $f$. The function $f$ is assumed to be a block cipher or a cryptographic hash function.
+
+\subsection*{Setup}
+Consider a cryptographic function $f: \mathcal{K}\times\mathcal{M} \rightarrow \mathcal{C}$, where $\mathcal{K}$ is the key space, $\mathcal{M}$ is the message space and $\mathcal{C}$ is the cipher space. The goal is to invert $f$ given $f(k)$, i.e., to find $k$ when $f(k)$ is known. 
+
+\subsection*{Precomputation Phase}
+In the precomputation phase, a series of computations are performed to create a trade-off between the computation time and memory usage:
+
+\begin{enumerate}
+	\item Select a subset of keys $\{k_1, k_2, \dots, k_t\} \subset \mathcal{K}$.
+	\item Compute $f(k_i)$ for each $k_i$.
+	\item Store the pairs $(k_i, f(k_i))$ in a table called the \textbf{precomputed table}.
+\end{enumerate}
+
+This table is used to accelerate the recovery of $k$ by storing potential outputs and their corresponding inputs.
+
+\subsection*{Recovery Phase}
+Given a ciphertext $c$, the attacker attempts to find $k$ such that $f(k) = c$:
+
+\begin{enumerate}
+	\item For each potential key $k'$, compute $f(k')$.
+	\item Check if $f(k')$ exists in the precomputed table.
+	\item If a match is found, i.e., $f(k') = f(k_i)$ for some $i$, retrieve $k_i$.
+\end{enumerate}
+
+\subsection*{Complexity Analysis}
+The effectiveness of a TMTO attack depends on the sizes of the key space $\mathcal{K}$, the cipher space $\mathcal{C}$, and the table:
+
+\begin{itemize}
+	\item \textbf{Memory Requirement:} Proportional to the number of entries $t$ in the table.
+	\item \textbf{Time Complexity:} Proportional to $\frac{|\mathcal{K}|}{t}$, assuming uniform distribution and independent choices of $k_i$.
+\end{itemize}
+
+\subsection*{Example: Hellman's TMTO}
+Hellman's approach involves structuring the precomputed table in chains where each chain starts from a randomly chosen initial value $k_0$ and is constructed as follows:
+
+\begin{align*}
+	k_1 &= f(k_0), \\
+	k_2 &= f(f(k_0)), \\
+	&\vdots \\
+	k_t &= f^{(t)}(k_0),
+\end{align*}
+
+where $f^{(t)}$ denotes the $t$-th application of $f$. Only $k_0$ and $k_t$ are stored, reducing memory usage but requiring more time in the recovery phase to reconstruct chains.
+
+\newpage
+\section*{Introduction}
+
+Hellman's Time-Memory Trade-Off is a cryptographic attack method that uses precomputed tables to find key inverses of encryption functions more quickly than by brute force alone. This technique involves creating a series of tables that map encrypted values to potential keys.
+
+\section*{Hellman Tables}
+
+Let $f: \mathcal{K} \rightarrow \mathcal{C}$ be a cryptographic function, where $\mathcal{K}$ represents the key space and $\mathcal{C}$ represents the ciphertext space. The function $f$ is typically a block cipher encryption under a specific key.
+
+\subsection*{Table Structure}
+
+A Hellman table is built to store chains of keys and ciphertexts that are produced by repeatedly applying $f$. The process to create a single table is as follows:
+
+\begin{enumerate}
+	\item \textbf{Initialization:} Choose $m$ initial values $k_0^{(1)}, k_0^{(2)}, \dots, k_0^{(m)} \in \mathcal{K}$.
+	\item \textbf{Chain Generation:} For each initial value $k_0^{(i)}$, generate a chain of length $t$:
+	\begin{align*}
+		k_1^{(i)} &= f(k_0^{(i)}), \\
+		k_2^{(i)} &= f(k_1^{(i)}), \\
+		&\vdots \\
+		k_t^{(i)} &= f(k_{t-1}^{(i)}).
+	\end{align*}
+	\item \textbf{Storing Endpoints:} Store only the starting point $k_0^{(i)}$ and the endpoint $k_t^{(i)}$ for each chain.
+\end{enumerate}
+
+The table thus contains $m$ entries of the form $(k_0^{(i)}, k_t^{(i)})$. Multiple tables can be constructed to cover more possible keys.
+
+\subsection*{Recovery Phase}
+
+To recover the key $k$ given a ciphertext $c$, the following steps are performed:
+
+\begin{enumerate}
+	\item \textbf{Chain Traversal:} For each endpoint $(k_0^{(i)}, k_t^{(i)})$ in the table:
+	\begin{enumerate}
+		\item Compute backwards from $c$, applying $f^{-1}$ if possible, or guess intermediate values to trace back the chain.
+		\item If an intermediate value $k_j^{(i)}$ matches the ciphertext $c$, the corresponding starting point $k_0^{(i)}$ is used to regenerate the chain forward to find the preimage of $c$.
+	\end{enumerate}
+	\item \textbf{Key Verification:} Verify by applying $f$ on the found preimage to check if it indeed maps to $c$.
+\end{enumerate}
+
+\subsection*{Complexity and Efficiency}
+
+The effectiveness and efficiency of Hellman tables are characterized by:
+\begin{itemize}
+	\item \textbf{Memory Usage:} Proportional to the number of chains $m$.
+	\item \textbf{Time Complexity:} Proportional to the product of the number of tables and the length of the chains $t$, divided by the number of chains $m$.
+	\item \textbf{Trade-Off:} By adjusting $m$ and $t$, a trade-off between precomputation time, memory usage, and recovery speed can be achieved.
+\end{itemize}
+
+\section*{Conclusion}
+
+Hellman's TMTO using Hellman Tables provides a method to potentially reduce the complexity of reversing cryptographic functions from $O(|\mathcal{K}|)$ to $O(\sqrt{|\mathcal{K}|})$ under ideal conditions, making it a powerful tool in cryptographic attacks.
