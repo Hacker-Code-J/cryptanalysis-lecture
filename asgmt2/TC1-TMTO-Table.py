@@ -67,7 +67,7 @@ key_bit = 24
 # SP = X0 -> X1 -> X2 -> ... -> Xt = EP  # Encryption Key Chain
 #---------------------------------
 
-#-- Reduction FUnction
+#-- Reduction Function
 #-- R: 32-bit [*,*,*,*] -> 24-bit [0,*,*,*]
 def R(ct):
    next_key = copy.deepcopy(ct)
@@ -98,7 +98,8 @@ def chain_EP_debug_print(SP, P0, t):
 #--- Debugging Chain
 #--- Xj[0,*,*,*] --> ct[*,*,*,*] --> R(ct)[0,*,*,*]
 def chain_EP_debug_file(SP, P0, t, chain_num, table_num):
-   file_name = 'debug/TMTO-chain-' + str(table_num) + '-' + str(chain_num) + '.txt'
+   file_name = f'debug/TMTO-chain-{table_num}-{chain_num}.txt'
+   # file_name = 'debug/TMTO-chain-' + str(table_num) + '-' + str(chain_num) + '.txt'
    f = open(file_name, 'w+')
    Xj = SP
    f.write('SP = [0, %d, %d, %d] \n' %(Xj[1], Xj[2], Xj[3]))
@@ -153,29 +154,22 @@ def make_one_tmto_table(P0, m, t, ell):
 #---------------------
    
 # def make_all_tmto_tables(P0, m, t, num_of_tables):
-#    print('making TMTO tables', end='')
+#    print('Making TMTO tables', end='')
 #    for ell in range(0, num_of_tables):
 #       make_one_tmto_table(P0, m, t, ell)
 #       print('.', end='', flush=True)
 
 #    print('\n All TMTO tables are created.')
-def make_all_tmto_tables(P0, m, t, num_of_tables):
-   print('making TMTO tables', end='')
-   for ell in range(0, num_of_tables):
-      make_one_tmto_table(P0, m, t, ell)
-      print('.', end='')
-
-   print('\n All TMTO tables are created.')
    
-def make_all_tmto_tables(P0, m, t, num_of_tables):
-    sys.stdout.write('Making TMTO tables')
-    sys.stdout.flush()
-    for ell in range(num_of_tables):
-        make_one_tmto_table(P0, m, t, ell)
-        sys.stdout.write('.')  # Blue dots
-        sys.stdout.flush()
+# def make_all_tmto_tables(P0, m, t, num_of_tables):
+#     sys.stdout.write('Making TMTO tables')
+#     sys.stdout.flush()
+#     for ell in range(num_of_tables):
+#         make_one_tmto_table(P0, m, t, ell)
+#         sys.stdout.write('.')  # Blue dots
+#         sys.stdout.flush()
     
-    sys.stdout.write('All TMTO tables are created.')
+#     sys.stdout.write('All TMTO tables are created.')
 
 def make_all_tmto_tables(P0, m, t, num_of_tables):
     sys.stdout.write('\033[4;5;95mTMTO Table Generation...\033[0m\n')
@@ -207,7 +201,7 @@ def make_all_tmto_tables(P0, m, t, num_of_tables):
 random.seed(2024)  #fixed seed --> identical result
 
 # Fixed Plaintext
-P0 = [1,2,3,4]
+P0 = [2,2,5,0]
 # Setup Parameter
 m = 256             # m: number of chain
 t = 256             # t: length of chain

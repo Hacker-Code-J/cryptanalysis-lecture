@@ -208,7 +208,7 @@ key_bit = 24
 # SP = X0 -> X1 -> X2 -> ... -> Xt = EP  # Encryption Key Chain
 #---------------------------------
 
-#-- Reduction FUnction
+#-- Reduction Function
 #-- R: 32-bit [*,*,*,*] -> 24-bit [0,*,*,*]
 def R(ct):
    next_key = copy.deepcopy(ct)
@@ -293,13 +293,13 @@ def make_one_tmto_table(P0, m, t, ell):
 #---------------------
    
 def make_all_tmto_tables(P0, m, t, num_of_tables):
-   print('making TMTO tables', end='')
+   print('Making TMTO tables', end='')
    for ell in range(0, num_of_tables):
       make_one_tmto_table(P0, m, t, ell)
-      print('.', end='')
+      print('.', end='', flush=True)
 
    print('\n All TMTO tables are created.')
-
+   
 #=====================
 # Test Run
 
@@ -307,7 +307,7 @@ def make_all_tmto_tables(P0, m, t, num_of_tables):
 random.seed(2024)  #fixed seed --> identical result
 
 # Fixed Plaintext
-P0 = [1,2,3,4]
+P0 = [2,2,5,0]
 # Setup Parameter
 m = 256             # m: number of chain
 t = 256             # t: length of chain
@@ -320,157 +320,81 @@ num_of_tables = 256
 make_all_tmto_tables(P0, m, t, num_of_tables)
 \end{python}
 
+\begin{lstlisting}[style=terminal]
+user@host:~@ python3 TC1-TMTO-Table.py
+TMTO Table Generation...
+Greating table 82/256: [########----------------------] 31% 
+\end{lstlisting}
+\begin{lstlisting}[style=terminal]
+All TMTO tables are created successfully!
+\end{lstlisting}
 
-
-\begin{python}[TC1-TMTO-Attack.py](style=one-dark){colback=gray!40!black,colframe=blue!50}
-#----------------------------------
-# TMTO Attack for TC1
-# - n: 32-bit, k: 24-bit
-# - Parameter: m=t=l=2^8 (mtl = 2^24)
-# -- m: number of starting points
-# -- l: number of tables
-# -- t: length of chain
-# - Memory = m*l = 2^16
-# - Time   = t*l = 2^16
-#----------------------------------
-
+\newpage
+\begin{python}[TC1-PTCT.py](style=one-dark){colback=gray!40!black,colframe=blue!50}
+#-------------------------
+# TC1 - Create PT and CT
+#-------------------------
 import TC1Lib as TC1
-import pickle # store variable
-import random # generate random number
-import copy   # deep copy 
 
-#--- int(4bytes) to list 
-#--- 0x12345678 -> [ 0x12, 0x34, 0x56, 0x78 ]
-def int2list(n):
-   out_list = []
-   out_list.append( (n >> 24) & 0xff )
-   out_list.append( (n >> 16) & 0xff )
-   out_list.append( (n >>  8) & 0xff )
-   out_list.append( (n      ) & 0xff )
+pt1 = [2, 2, 5, 0]  # P0 used in TMTO
+key = [0, 218, 190, 65]  # TMTO-chain-89-237
+ct1 = TC1.TC1_Enc(pt1, key)
 
-   return out_list
+pt2 = [3, 19, 37, 57]
+ct2 = TC1.TC1_Enc(pt2, key)
 
-#--- list to int
-#--- [ 0x12, 0x34, 0x56, 0x78 ] -> 0x12345678
-def list2int(l):
-   n = 0
-   num_byte = len(l)
-   for i in range(len(l)):
-      n += l[i] << 8*(num_byte - i -1)
+print('PTCT for TMTO attack')
 
-   return n
+print('pt1 =', pt1)
+print('ct1 =', ct1)
 
-#--- Save Variable to File
-def save_var_to_file(var, filename):
-   f = open(filename, 'w+b')
-   pickle.dump(var, f)
-   f.close()
+print('pt2 =', pt2)
+print('ct2 =', ct2)
 
-#--- Load Variable from File
-   def load_var_from_file(filename):
-   f = open(filename, 'rb')
-   var = pickle.load(f)
-   f.close()
-   
-   return var
-#============================================================
-#  TMTO Attack
-#============================================================
+print('key =', key)
+\end{python}
 
-# 32-bit Enc/Dec : PT = [*,*,*,*] --> CT = [*,*,*,*]
-# 24-bit Key     : key = [0,*,*,*]
-key_bit = 24
+\begin{lstlisting}[style=terminal]
+user@host:~@ python3 TC1-PTCT.py      
+PTCT for TMTO attack
+pt1 = [2, 2, 5, 0]
+ct1 = [135, 9, 44, 221]
+pt2 = [3, 19, 37, 57]
+ct2 = [150, 236, 50, 83]
+key = [0, 218, 190, 65]
+\end{lstlisting}
 
-#---------------------------------
-# TMTO Table (Dictionary): { (SP:EP) }
-#   #SP = #EP = 2^8,   #chains: m = 2^8, #tables: l = 2^8
-#---------------------------------
+\newpage
+\begin{python}[TC1-TMTO-Attack.py](style=one-dark){colback=gray!40!black,colframe=blue!50}
 
-#---------------------------------
-# P0 : Chosen Plaintext
-# X_{j+1} = E(P0, X_{j}) 		# if k = n
-# X_{j+1} = R( E(P0, X_{j}) ) 	   # R: 32-bit -> 24-bit
-# SP = X0 -> X1 -> X2 -> ... -> Xt = EP  # Encryption Key Chain
-#---------------------------------
-
-#-- Reduction FUnction
-#-- R: 32-bit [*,*,*,*] -> 24-bit [0,*,*,*]
-def R(ct):
-   next_key = copy.deepcopy(ct)
-   next_key[0] = 0
-	
-   return next_key
-
-#-- Create Encryption Key Chain
-#-- SP : random key (24-bit)
-#-- P0 : chosen plaintext (fixed)
-#-- t  : length of chain
-def chain_EP(SP, P0, t):
-   Xj = SP
-   for j in range(0,t):
-      ct = TC1.TC1_Enc(P0, Xj)
-      Xj = R(ct)   # next Xj (32-bit -> 24-bit)
-   
-   return Xj
-
-#--- Debugging Chain
-def chain_EP_debug_print(SP, P0, t):
-   Xj = SP
-   print('SP =', SP)
-   for j in range(0,t):
-      ct = TC1.TC1_Enc(P0, Xj)
-      Xj = R(ct)   # next Xj 
-      print(' -> ', ct, ' -> ', Xj)
-   
-   return Xj
-
-#--- Debugging Chain
-def chain_EP_debug_file(SP, P0, t, chain_num, table_num):
-   file_name = 'debug/TMTO-chain-' + str(table_num) + '-' + str(chain_num) + '.txt'
-   f = open(file_name, 'w+')
-   Xj = SP
-   f.write('SP = [0, %d, %d, %d] \n', %(Xj[1], Xj[2], Xj[3]))
-   
-   for j in range(0,t):
-      ct = TC1.TC1_Enc(P0, Xj)
-      Xj = R(ct)
-      f.write(' --> [%d, %d, %d, %d] ' %(ct[0], ct[1], ct[2], ct[3]))
-      f.write(' --> [%d, %d, %d, %d] \n' %(Xj[0], Xj[1], Xj[2], Xj[3]))
-   f.close()
-   
-   return Xj
+...
 
 # Chosen Plaintext (Fixed on TMTO Table)
-P0 = [1,2,3,4]
+P0 = [2,2,5,0]
 # Parameter for Attack
 m = 256             # m: Number of Chains over One Table
 t = 256             # t: Length of Chain
 num_of_tables = 256 # Number of Tables
 
-
 #=====================
-# (단계2) 온라인 공격(획득 암호문에 대한 암호키 찾기)
-# (단계1에서 만든 사전파일을 이용하여 공격하는 과정)
+# (Step 2) Attack
 #=====================
 
-
-#=====
-# random.seed(2024)으로 만든 TMTO 테이블용 샘플
-#=====
-'''
+''' 
 PTCT for TMTO attack
-pt1 = [1, 2, 3, 4]
-ct1 = [224, 255, 196, 177]
-pt2 = [5, 6, 7, 8]
-ct2 = [71, 69, 245, 137]
-key = [0, 23, 36, 6]
+pt1 = [2, 2, 5, 0]
+ct1 = [135, 9, 44, 221]
+pt2 = [3, 19, 37, 57]
+ct2 = [150, 236, 50, 83]
+key = [0, 218, 190, 65]
 '''
 
 #--------------
 # Key Search for one Table
 def one_tmto_table_search(ct, P0, m, t, ell):
    key_candid_list = []
-   file_name = 'tmto_table/TMTO-' + str(ell) + '.dic'
+   file_name = f'tmto_table/TMTO-{ell}.dic'
+   #file_name = 'tmto_table/TMTO-' + str(ell) + '.dic'
    tmto_dic = load_var_from_file(file_name)
 
    Xj = R(ct)
@@ -478,7 +402,7 @@ def one_tmto_table_search(ct, P0, m, t, ell):
    for idx in range(0,t):
       Xj_int = list2int(Xj)
 
-      if Xj_int in tmto_dic: # Xj가 EP에 있는가?
+      if Xj_int in tmto_dic: # Is Xj in EP?
          SP = int2list(tmto_dic[Xj_int]) # dic = { EP:SP }
          key_guess = chain_EP(SP, P0, current_j - 1)
          key_candid_list.append(key_guess)
@@ -492,7 +416,7 @@ def one_tmto_table_search(ct, P0, m, t, ell):
 
 #================
 
-ct1 = [224, 255, 196, 177] # (random.seed(2024))
+ct1 = [135, 9, 44, 221] # (random.seed(2024))
 key_pool = []
 print("TMTO Attack", end='')
 for ell in range(0, num_of_tables):
@@ -503,9 +427,9 @@ for ell in range(0, num_of_tables):
 print('\n Attack complete!\n')
 print('key_pool =', key_pool)
 
-# 다른 (평문, 암호문)을 이용하여, 후보키 중 최종 암호키를 선택함
-pt2 = [5,6,7,8]
-ct2 = [71, 69, 245, 137] # (random.seed(2024))
+# Choose final key through anther PT-CT pair
+pt2 = [3, 19, 37, 57]
+ct2 = [150, 236, 50, 83] # (random.seed(2024))
 final_key = []
 
 for key in key_pool:
