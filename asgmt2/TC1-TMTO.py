@@ -127,10 +127,10 @@ num_of_tables = 256
 ''' 
 PTCT for TMTO attack
 pt1 = [2, 2, 5, 0]
-ct1 = [135, 9, 44, 221]
+ct1 = [167, 210, 209, 11]
 pt2 = [3, 19, 37, 57]
-ct2 = [150, 236, 50, 83]
-key = [0, 218, 190, 65]
+ct2 = [131, 136, 209, 69]
+key = [0, 177, 27, 241]
 '''
 
 #--------------
@@ -160,7 +160,7 @@ def one_tmto_table_search(ct, P0, m, t, ell):
 
 #================
 
-ct1 = [135, 9, 44, 221] # (random.seed(2024))
+ct1 = [167, 210, 209, 11] # (random.seed(2024))
 key_pool = []
 print("TMTO Attack", end='')
 for ell in range(0, num_of_tables):
@@ -173,7 +173,7 @@ print('key_pool =\n', key_pool, '\n')
 
 # Choose final key through anther PT-CT pair
 pt2 = [3, 19, 37, 57]
-ct2 = [150, 236, 50, 83] # (random.seed(2024))
+ct2 = [131, 136, 209, 69] # (random.seed(2024))
 final_key = []
 
 for key in key_pool:
@@ -181,4 +181,4 @@ for key in key_pool:
     if ct_result == ct2:
         final_key.append(key)
 
-print('Final key =\n', final_key)   
+print(f"Final key ({len(final_key)}) ={final_key}")   

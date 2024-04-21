@@ -4,7 +4,7 @@
 import TC1Lib as TC1
     
 pt1 = [2, 2, 5, 0]  # P0 used in TMTO
-key = [0, 218, 190, 65]  # TMTO-chain-89-237
+key = [0, 177, 27, 241]  # TMTO-chain-255-183
 ct1 = TC1.TC1_Enc(pt1, key)
 
 pt2 = [3, 19, 37, 57]

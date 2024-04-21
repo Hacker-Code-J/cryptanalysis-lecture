@@ -1,0 +1,437 @@
+\section{2023-Spring-Midterm}
+
+\begin{enumerate}[\bf 1.]
+	\item \textbf{[ Substitution Cipher]}
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+#-- Subst-Encryption
+def subst_encrypt(key, msg):
+	result = ''
+	InSet = Alphabet     # InSet = 'AB...Z'
+	OutSet = key 	# OutSet = '...' (Key)
+	for ch in msg:
+		if ch.upper() in InSet:
+			idx = InSet.find(ch.upper())	
+			if ch.isupper():
+				result += OutSet[idx].upper() 
+			else:
+				result += OutSet[idx].lower()
+		else:
+			result += ch
+	return result
+#-- Subst-Decryption
+def subst_decrypt(key, msg):
+    result = ''
+	InSet = Alphabet
+	OutSet = key	
+	for ch in msg:
+		if ch.upper() in InSet:
+			idx = InSet.find(ch.upper())
+			if ch.isupper():
+				result += OutSet[idx].upper()
+			else:
+				result += OutSet[idx].lower()
+		else:
+			result += ch
+	return result
+\end{python}
+\begin{enumerate}[(a)]
+	\item \ 
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+# A -> A, B -> B, C -> F, ..., Z -> O
+key1 = 'ABFWQICPLZYUDNHMGKEXVTSJRO'
+pt1 = 'banana'
+ct1 = subst_encrypt(key1, pt1)
+print('Eng =', Alphabet)
+print('key1 =', key1)
+print('pt1 =', pt1)
+print('ct1 =', ct1)
+\end{python}
+\begin{lstlisting}[style=terminal]
+Eng = ABCDEFGHIJKLMNOPQRSTUVWXYZ
+key1 = ABFWQICPLZYUDNHMGKEXVTSJRO
+pt1 = banana
+ct1 = banana
+\end{lstlisting}
+	\item \
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+def valid_key1(key):
+	list_key = list(key)
+	list_key.sort() # ASCII; A = 65, a = 97
+	key_alphabet = ''.join(list_key).upper()
+	return key_alphabet == Alphabet
+
+def valid_key2(key):
+	for ch in key:
+		if not ch.isalpha():
+			return False
+		if len(set(key)) != 26:
+			return False
+	return True
+\end{python}
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+key_b1 = 'AAADEFGHIJKLMNOPQRSTUVWXYZ'
+key_b2 = 'ABCDEFGHIJKLMNOPQRSTUVWxyz'
+key_b3 = 'abcDEFGHIJKLMNOPQRSTUVWXYZ'
+
+print(f"b1 | {valid_key1(key_b1)} : {valid_key2(key_b1)}")
+print(f"b2 | {valid_key1(key_b2)} : {valid_key2(key_b2)}")
+print(f"b3 | {valid_key1(key_b3)} : {valid_key2(key_b3)}")
+\end{python}
+\begin{lstlisting}[style=terminal]
+b1 | False : False
+b2 | True  : True
+b3 | False : True
+\end{lstlisting}
+	\newpage
+	\item \ 
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+def gen_random_key(seed):
+	random.seed(seed)
+	alpha_list = list(Alphabet)
+	random.shuffle(alpha_list)
+	shuffled_key = ''.join(alpha_list)
+	return shuffled_key
+\end{python}
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+def gen_random_key(seed):
+	random.seed(seed)
+	alpha_list = list(Alphabet)
+	valid_key = False
+	while not valid_key:
+		random.shuffle(alpha_list)
+		shuffled_key = ''.join(alpha_list)
+		valid_key = True
+		for i in range(len(Alphabet)):
+			# if A -> A or ... or Z -> Z
+			if Alphabet[i] == shuffled_key[i]:
+				valid_key = False
+				break # for-break
+		return shuffled_key
+		
+for _ in range(10):
+	alpha_list = list(Alphabet)
+	for _ in range(255):
+		random.shuffle(alpha_list)
+	seed = ''.join(alpha_list)
+	print(gen_random_key2(seed))
+\end{python}
+\begin{lstlisting}[style=terminal]
+QODUNVELJPFZGTYCXSAKRIBHMW
+NRHSXVFWUCYOJZBTLMPEKDAIQG
+CYKXDVPEBMWAZRJHOTISFUNQLG
+TDMZLNUSQCVJOGIEAWRFKXYHPB
+LYDJTIPFNRWQKEOMBVHXGUSZAC
+HSOUNZPTIJRGQWAXLVYFDEMBKC
+EDBICNMHUYQOZXSJRLAWFKPTGV
+KUDCFEHXYATINRPVQMGWZSLBJO
+CKSHBAPROUVINXTLWFEJGQMYZD
+KARZCIFPDUMJTYGHWSQEOVLBXN
+\end{lstlisting}
+\end{enumerate}
+\newpage
+\item \textbf{[ Index of Coincidence]}
+\begin{tcolorbox}[title=\bf Index of Coincidence, colbacktitle=cyan, colframe=cyan]
+	For a given ciphertext, the \textbf{index of coincidence} $I$ is defined to be the probability that two randomly selected letters in the ciphertext represent the same plaintext symbol.
+	\hspace{12pt}For a given ciphertext, let $n_0,n_1,...,n_{25}$ be the respective letter counts of \texttt{A}, \texttt{B}, \texttt{C}, $\dots$, \texttt{Z} in the ciphertext, and set $n=n_0+n_1+\cdots+n_{25}$. Then, the index of coincidence can be computed as \[
+	I=\frac{\binom{n_1}{2}+\binom{n_2}{2}+\cdots\binom{n_{25}}{2}}{\binom{n_1+\cdots+n_{25}}{2}}=\frac{\sum_{i=0}^{25}\binom{n_i}{2}}{\binom{n}{2}}=\frac{1}{n(n-1)}\sum_{i=0}^{25}[n_i(n_i-1)].
+	\]
+	\hspace{12pt} To see why the index of coincidence gives us useful information, first note that the empirical probability of randomly selecting two identical letters from a large English plaintext is
+	\[
+	\sum_{i=0}^{25}p_i^2\approx0.065.
+	\]
+\end{tcolorbox}
+	\begin{enumerate}[(a)]
+		\item Attack with Index of Coincidence
+		\begin{table}[h!]
+		\begin{tabular}{rc}
+		Caesar Cipher & \texttt{IC(PT)=IC(CT)} \\
+		Substitution Cipher & \texttt{IC(PT)=IC(CT)} \\
+		Vigen\'{e}re Cipher & \texttt{IC(CT)$\approx$IC(rand)}, \textth{IC(CT)<IC(PT)}
+		\end{tabular}
+		\end{table}
+		\item 알파벳 26 글자 중 `A'의 빈도가 30\%이고, `B'-`K'까지 10글자가 같은
+		비율로 사용되며, 나머지 알파벳은 쓰지 않는 언어가 있다고 가정하자. 이 언어로
+		된 문서의 `Index of Coincidence'는 얼마인가?
+		\begin{proof}[\textcolor{magenta}{\bf Sol}]
+			\ \begin{itemize}
+				\item Document with $N$ characters.
+				\item Frequency of `B' - `K' : 70\% (for each 7\%)
+			\end{itemize} Then \[
+			IC=\frac{1}{N(N-1)}\left[0.3N(0.3N-1)+0.07N(0.07-1)\times 10\right]
+			\] and so \[
+			\lim\limits_{N\to\infty}IC=\frac{(0.3)^2\cdot N^2+\cdots + (0.07)^2\cdot10\cdot N^2+\cdots\times}{N^2+\cdots}=0.09+0.049=0.139.
+			\]
+		\end{proof}
+		\newpage
+		\item 다음은 영문을 Vigen\'{e}re 암호로 암호화한 문서에 대하여 키 길이 key len
+		을 1부터 증가시켜가며 암호문을 키 길이 간격으로 추출한 sub msg에 대하여
+		`IC(Index of Coincidence)'를 계산한 결과이다. 아래 결과로부터 사용된 암호키
+		는 몇 글자로 추정되는가?
+\begin{lstlisting}[style=terminal]
+key_len =  1 :IC(sub_msg) = 0.0435
+key_len =  2 :IC(sub_msg) = 0.0493
+key_len =  3 :IC(sub_msg) = 0.0428
+key_len =  4 :IC(sub_msg) = 0.0598
+key_len =  5 :IC(sub_msg) = 0.0424
+key_len =  6 :IC(sub_msg) = 0.0477
+key_len =  7 :IC(sub_msg) = 0.0444
+key_len =  8 :IC(sub_msg) = 0.0597
+key_len =  9 :IC(sub_msg) = 0.0418
+key_len = 10 :IC(sub_msg) = 0.0492
+key_len = 11 :IC(sub_msg) = 0.0445
+key_len = 12 :IC(sub_msg) = 0.0578
+key_len = 13 :IC(sub_msg) = 0.0469
+key_len = 14 :IC(sub_msg) = 0.0505
+key_len = 15 :IC(sub_msg) = 0.0416
+key_len = 16 :IC(sub_msg) = 0.0638
+key_len = 17 :IC(sub_msg) = 0.0469
+\end{lstlisting}
+	\begin{proof}[\textcolor{magenta}{\bf Sol}]
+		Length of Key = 4 (Size of Interval)
+	\end{proof}
+	\end{enumerate}
+	\newpage
+	\item \
+\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+#=========================================
+# TC1 - Toy Cipher (encryption/decryption)
+# - n, k: 32-bit
+# - Identical Round Function
+# - Key Schedule (X)
+#=========================================
+
+NUM_ROUND = 10
+
+#--------------------------------------
+#  Encryption
+#--------------------------------------
+
+#--- S-Box (AES)
+Sbox = [ ... ]
+#--- Inverse S-Box (AES)
+ISbox = [ ... ]
+
+#-- AR: Add Roundkey
+def AR(in_state, rkey):
+	out_state = [0] * len(in_state)
+	for i in range(len(in_state)):
+		out_state[i] = in_state[i] ^ rkey[i] 
+	return out_state
+
+#-- SB: Sbox layer
+def SB(in_state):
+	out_state = [0] * len(in_state)
+	for i in range(len(in_state)):
+		out_state[i] = Sbox[in_state[i]]
+	return out_state
+
+#-- LM: Linear Map
+# |Y0|     |0 1 1 1||x0|   |x1^x2^x3|
+# |  |     |       ||  |   |        |
+# |Y1|     |1 0 1 1||x1|   |x0^x2^x3|
+# |  |  =  |       ||  | = |        |
+# |Y2|     |1 1 0 1||x2|   |x0^x1^x3|
+# |  |     |       ||  |   |        |
+# |Y3|     |1 1 1 0||x3|   |x0^x1^x2|
+def LM(in_state):
+	out_state = [0] * len(in_state)
+	All_Xor = in_state[0] ^ in_state[1] ^ in_state[2] ^ in_state[3]
+	for i in range(len(in_state)):
+		out_state[i] = All_Xor ^ in_state[i]
+	return out_state
+
+#-- Enc_Round
+def Enc_Round(in_state, rkey):
+	out_state = [0] * len(in_state)
+	out_state = AR(in_state, rkey)
+	in_state = SB(out_state)
+	out_state = LM(in_state)
+	return out_state
+
+#- TC1 Encryption
+def TC1_Enc(PT, key):
+	NROUND = NUM_ROUND # Number of Round = 10
+	CT = PT #CT = [0] * len(PT)
+	for i in range(NROUND):
+		CT = Enc_Round(CT, key)
+	return CT
+
+#--------------------------------------
+#  Decryption
+#--------------------------------------
+
+#-- SB: Sbox layer
+def ISB(in_state):
+out_state = [0, 0, 0, 0]
+	for i in range(len(in_state)):
+		out_state[i] = ISbox[in_state[i]]
+	return out_state
+
+#-- Decrypt Round
+def Dec_Round(in_state, rkey):
+	out_state1 = [0, 0, 0, 0]
+	out_state2 = [0, 0, 0, 0]
+	out_state3 = [0, 0, 0, 0]
+	out_state1 = LM(in_state)
+	out_state2 = ISB(out_state1)
+	out_state3 = AR(out_state2, rkey)
+	return out_state3
+
+#- TC1 Decryption
+def TC1_Dec(input_state, key):
+	state = input_state
+	numRound = NUM_ROUND
+	for i in range(0, numRound):
+		state = Dec_Round(state, key)
+	return state
+\end{python}\\
+\newpage
+\begin{enumerate}
+	\item 암호키 32비트가 \texttt{[0x00, 0x02, 0x01, 0x03]}으로 설정되었다고 하자.
+	1라운드 출력의 처음 3바이트가 동일한 입력의 예를 하나만 만들면? \[
+	\left[p_0, p_1, p_2, p_3\right]\implies\left[a,a,a,b\right]
+	\]
+	\begin{proof}[\textcolor{magenta}{\bf Sol}]
+		Consider $[a,a,a,b]=[0,0,0,1]$. Then $[p_0, p_1, p_2, p_3]=[\texttt{0x09},\texttt{0x0b},\texttt{0x08},\texttt{0x51}]$
+		\begin{center}
+		\begin{tikzcd}
+			p_0=\texttt{0x09}                      & p_1=\texttt{0x0b}                      &                                                                                      & p_2=\texttt{0x08}                      & p_3=\texttt{0x51}                      \\
+			\oplus\texttt{0x00} \arrow[u, no head] & \oplus\texttt{0x02} \arrow[u, no head] &                                                                                      & \oplus\texttt{0x01} \arrow[u, no head] & \oplus\texttt{0x03} \arrow[u, no head] \\
+			\texttt{0x09} \arrow[u, no head]       & \texttt{0x09} \arrow[u, no head]                &                                                                                      & \texttt{0x09} \arrow[u, no head]       & \texttt{0x52} \arrow[u, no head]       \\
+			S \arrow[u, no head]                   & S \arrow[u, no head]                   &                                                                                      & S \arrow[u, no head]                   & S \arrow[u, no head]                   \\
+			1 \arrow[u, no head]                   & 1 \arrow[u, no head]                   &                                                                                      & 1 \arrow[u, no head]                   & 0 \arrow[u, no head]                   \\
+			&                                        & LM \arrow[llu, no head] \arrow[lu, no head] \arrow[ru, no head] \arrow[rru, no head] &                                        &                                        \\
+			a=0 \arrow[rru, no head]                 & a=0 \arrow[ru, no head]                  &                                                                                      & a=0 \arrow[lu, no head]                  & b=1 \arrow[llu, no head]                
+		\end{tikzcd}
+	\end{center}
+	\end{proof}
+	\item Note that \[
+	\begin{bmatrix}
+		y_0\\ y_1\\ y_2\\ y_3
+	\end{bmatrix}=\begin{bmatrix}
+	0 & 1 & 1 & 1 \\ 1 & 0 & 1 & 1 \\ 1 & 1 & 0 & 1 \\ 1 & 1 & 1 & 0
+\end{bmatrix}\begin{bmatrix}
+	x_0 \\ x_1 \\ x_2 \\ x_3
+\end{bmatrix}=M\begin{bmatrix}
+	x_0 \\ x_1 \\ x_2 \\ x_3
+\end{bmatrix}.
+	\] Let $M=I_{4}=\begin{bmatrix}
+		1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1
+	\end{bmatrix}$. Then $c_0=f_0(p_0, k_0)$ and so we can find $k_0$ with $2^8={256}$ complexity.
+\end{enumerate} % Problem3
+\newpage
+\item \textbf{[ Double Encryption ]} \begin{itemize}
+	\item Block Cipher \texttt{E1}: in/out 64-bit, key 64-bit
+	\item Block Cipher \texttt{E2}: in/out 64-bit, key 52-bit
+	\item Formula: $CT=E2(E1(PT,K1), K2)$
+\end{itemize}
+	\begin{center}
+	\begin{tikzcd}
+		PT \arrow[d, "64"'] &                     \\
+		E1 \arrow[d, "64"'] & K_1 \arrow[l, "64"] \\
+		E2 \arrow[d, "64"'] & K_2 \arrow[l, "56"] \\
+		CT                  &                    
+	\end{tikzcd}
+	\end{center}
+	\begin{enumerate}[(a)]
+		\item (평문, 암호문) 쌍을 여러 개 수집한 후 공격을 시작한다고 가정하자.
+		수집한 평문을 E1으로 암호화하여, 중간값을 저장하고, 수집한 암호문을 E2로
+		복호화하여 비교하는 방식으로 공격한다면, 이 때, 사용되는 메모리와 계산량은
+		각각 얼마인가?
+		\begin{proof}[\textcolor{magenta}{\bf Sol}]
+		Memory = $2^{k_1}=2^{64}$, Time = $2^{k_2}=2^{56}$.
+		\end{proof}
+		\item (a)와 동일한 조건에서 블록암호 E1과 E2의 역할을 반대로 하여 공격한다
+		면, 즉, $PT = E1^{-1} (E2^{-1} (CT, K2), K1)$를 이용하여 같은 공격을 수행한다면,
+		이 때, 사용되는 메모리와 계산량은 각각 얼마인가?
+		\begin{proof}[\textcolor{magenta}{\bf Sol}]
+		Memory = $2^{k_2}=2^{56}$, Time = $2^{k_1}=2^{64}$.
+		\end{proof}
+		\item 높은 확률로 하나의 키 후보만 남도록 하려면 몇개의 (평문, 암호문) 쌍을
+		수집해야 하는가?
+		\begin{proof}[\textcolor{magenta}{\bf Sol}]
+			\ \begin{itemize}
+				\item 64-bit 블록암호에서 우연히 중간값이 일치할 확률 = $\frac{1}{2^{64}}$
+				\item $2^{k_1}$ (테이블 크기, 저장 되어 있는 중간값의 개수)
+				\item $2^{k_2}$ (비교 횟수)
+			\end{itemize} Thus, \[
+			\frac{1}{2^{64}}\times 2^{k_1}\times 2^{k_2}=2^{k_1+k_2-64}=2^{64+56-64}=2^{56}.
+			\] 추가로 (PT,CT) 한 쌍을 확인하면 $2^{56}\times\frac{1}{2^{64}}=\frac{1}{8}$.
+			MIMT + 한쌍 or 처음부터해서 두 쌍.
+		\end{proof}
+		\item 선택평문공격(chosen plaintext attack)이 가능하다면, 고정된 평문에 대
+		한 사전계산(pre-computation)을 이용하여 공격할 수 있다. 이 때 최적의 공격
+		방법을 구성하고 사전계산으로 얻어지는 장점을 설명하라.
+		\begin{proof}[\textcolor{magenta}{\bf Sol}]
+			\ \begin{enumerate}
+				\item 고정 평문에 대하여 $2^{k_1}$ 테이블을 사전계산한다.
+				\item 암호문 수집 후 $2^{k_2}$ 정도의 복호화하면서 찾을 수 있다.
+			\end{enumerate}
+		\end{proof}
+	\end{enumerate} %Problem 4
+\item \textbf{[ TMTO Attack ]}
+\begin{enumerate}[(1)]
+	\item $m$: number of random staring points
+	\item $t$: length of chain
+	\item $\ell$ : number of Hellman Table \[
+	X_{i,j+1}=f(X_{i,j})=E(PT,X_{i,j}),\quad(i=1,2,\dots,m, j = 0,1,\dots,t).
+	\]
+\end{enumerate} Let $m=2^{24},t=2^{20}$ and $\ell=2^{20}$.
+\begin{center}\begin{tikzcd}
+		{SP_1=X_{1,0}} \arrow[r] & {X_{1,1}} \arrow[r] & {X_{1,2}} \arrow[r] & \cdots \arrow[r] & {X_{1,t-1}} \arrow[r] & {X_{1,t}=EP_1} \\
+		{SP_2=X_{2,0}} \arrow[r] & {X_{2,1}} \arrow[r] & {X_{2,2}} \arrow[r] & \cdots \arrow[r] & {X_{2,t-1}} \arrow[r] & {X_{2,t}=EP_2} \\
+		{SP_i=X_{i,0}} \arrow[r] & {X_{i,1}} \arrow[r] & {X_{i,2}} \arrow[r] & \cdots \arrow[r] & {X_{i,t-1}} \arrow[r] & {X_{i,t}=EP_i} \\
+		{SP_m=X_{m,0}} \arrow[r] & {X_{m,1}} \arrow[r] & {X_{m,2}} \arrow[r] & \cdots \arrow[r] & {X_{m,t-1}} \arrow[r] & {X_{m,t}=EP_m}
+	\end{tikzcd}
+\end{center}
+\begin{enumerate}[(a)]
+	\item 암호문 CT 에 f 를 a번 적용하여 EPi와 일치함을 확인했다면, 암호키를
+	어떻게 결정하는가? 이 과정에서 필요한 계산량은?
+	\[EP_i(\underbrace{f\circ f\circ\dots\circ f}_{a})(CT)\]
+	\begin{proof}[\textcolor{magenta}{\bf Sol}]
+	$SP_i=X_{i,0}$를 $(t-a-1)$번 암호화 하면 $X_{t-a-1}(=key)$를 얻는다.
+	\end{proof}
+	\item 테이블 준비에 필요한 사전 계산량(pre-computation)은 얼마인가? 전수
+	조사보다 많은 사전 계산량을 사용해도 의미있는 공격이 가능함을 설명하라.
+	\begin{proof}[\textcolor{magenta}{\bf Sol}]
+	$m\times t\times l=2^{24}\times 2^{20}\times 2^{20}=2^{64}$. 실제 암호문 획득 이전에 미리 테이블을 만들어두면 실제 암호문을 획득 했을 때 해당되는 키를 빠르게 얻을 수 있다.
+\end{proof}
+	\item 사전계산 후 공격에 필요한 메모리와 계산량은 각각 얼마인가?
+	\begin{proof}[\textcolor{magenta}{\bf Sol}]
+	사전 계산량 $mtl$를 제외한다면 $M=m\times l$ and $T=t\times l$.
+	\end{proof}
+	\item 높은 확률로 하나의 키 후보만 남기도록 하려면, 추가적으로 필요한 (평문,
+	암호문)의 쌍은 몇 개인가?
+	\begin{proof}[\textcolor{magenta}{\bf Sol}]
+		다른 한 쌍 ($P',C'$)를 추가적으로 더 확인해보면 높은 확률로 하나의 키 후보를 남기게 된다.
+	\end{proof}
+\end{enumerate} % Problem 5
+\end{enumerate}
+
+%\newpage
+%
+%\begin{proof}[\textcolor{magenta}{\bf Sol}]
+%\end{proof}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}
+%\begin{python}[](style=one-dark){colback=gray!40!black,colframe=blue!50}
+%\end{python}

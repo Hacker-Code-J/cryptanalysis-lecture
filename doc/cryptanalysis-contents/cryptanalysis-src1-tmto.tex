@@ -1,13 +1,11 @@
-\section*{Toy Cipher TC1}
+\section{Toy Cipher TC1}
 \begin{python}[TC1Lib.py](style=one-dark){colback=gray!40!black,colframe=blue!50}
-"""
-=========================================
-TC1 - Toy Cipher (encryption/decryption)
-- n, k: 32-bit
-- Identical Round Function
-- Key Schedule (X)
-=========================================
-"""
+#=========================================
+# TC1 - Toy Cipher (encryption/decryption)
+# - n, k: 32-bit
+# - Identical Round Function
+# - Key Schedule (X)
+#=========================================
 
 NUM_ROUND = 10
 
@@ -17,6 +15,7 @@ NUM_ROUND = 10
 
 #--- S-Box (AES)
 Sbox = [ ... ]
+#--- Inverse S-Box (AES)
 ISbox = [ ... ]
 
 #-- AR: Add Roundkey
@@ -24,7 +23,6 @@ def AR(in_state, rkey):
    out_state = [0] * len(in_state)
    for i in range(len(in_state)):
       out_state[i] = in_state[i] ^ rkey[i] 
-   
    return out_state
 
 #-- SB: Sbox layer
@@ -32,7 +30,6 @@ def SB(in_state):
    out_state = [0] * len(in_state)
    for i in range(len(in_state)):
       out_state[i] = Sbox[in_state[i]]
-   
    return out_state
 
 #-- LM: Linear Map
@@ -41,7 +38,6 @@ def LM(in_state):
    All_Xor = in_state[0] ^ in_state[1] ^ in_state[2] ^ in_state[3]
    for i in range(len(in_state)):
       out_state[i] = All_Xor ^ in_state[i]
-   
    return out_state
 
 #-- Enc_Round
@@ -50,7 +46,6 @@ def Enc_Round(in_state, rkey):
    out_state = AR(in_state, rkey)
    in_state = SB(out_state)
    out_state = LM(in_state)
-   
    return out_state
 
 #- TC1 Encryption
@@ -71,7 +66,6 @@ def ISB(in_state):
    out_state = [0, 0, 0, 0]
    for i in range(len(in_state)):
       out_state[i] = ISbox[in_state[i]]
-   
    return out_state
 
 #-- Decrypt Round
@@ -82,16 +76,17 @@ def Dec_Round(in_state, rkey):
    out_state1 = LM(in_state)
    out_state2 = ISB(out_state1)
    out_state3 = AR(out_state2, rkey)
-   
    return out_state3
+
+
+
 
 #- TC1 Decryption
 def TC1_Dec(input_state, key):
    state = input_state
-   numRound = NUM_ROUND # 라운드 수
+   numRound = NUM_ROUND
    for i in range(0, numRound):
       state = Dec_Round(state, key)
-
    return state
    
 #======================================
@@ -139,6 +134,7 @@ output plaintext = [65, 82, 73, 65]
 \end{lstlisting}}
 
 \newpage
+\section{TMTO Attack}
 \begin{python}[TC1-TMTO-Table.py](style=one-dark){colback=gray!40!black,colframe=blue!50}
 #----------------------------------
 # TMTO Attack for TC1
@@ -156,8 +152,7 @@ import pickle # store variable
 import random # generate random number
 import copy   # deep copy 
 
-#--- int(4bytes) to list 
-#--- 0x12345678 -> [ 0x12, 0x34, 0x56, 0x78 ]
+#--- int(4bytes) to list 0x12345678 -> [ 0x12, 0x34, 0x56, 0x78 ]
 def int2list(n):
    out_list = []
    out_list.append( (n >> 24) & 0xff )
@@ -166,8 +161,7 @@ def int2list(n):
    out_list.append( (n      ) & 0xff )
    return out_list
 
-#--- list to int
-#--- [ 0x12, 0x34, 0x56, 0x78 ] -> 0x12345678
+#--- list to int [ 0x12, 0x34, 0x56, 0x78 ] -> 0x12345678
 def list2int(l):
    n = 0
    num_byte = len(l)
