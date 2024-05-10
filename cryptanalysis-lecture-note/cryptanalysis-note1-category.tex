@@ -1,0 +1,269 @@
+\documentclass[11pt,openany]{article}
+
+\input{cryptanalysis-note-setup}
+%\input{../category-theory-setup-tcolorbox}
+% Header and footer formatting
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhf{}
+\rhead{\textcolor{TealBlue2}{\textbf{Cryptanalysis-Note}}}%\rule{3cm}{0.4pt}}
+\lhead{\textcolor{TealBlue2}{\textbf{Lecture-Note 1}}}
+% Define footer
+\newcommand{\footer}[1]{
+\begin{flushright}
+	\vspace{2em}
+	\includegraphics[width=2.5cm]{school_logo.jpg} \\
+	\vspace{1em}
+	\textcolor{TealBlue2}{\small\textbf{#1}}
+\end{flushright}
+}
+%\rfoot{\large Department of Information Security, Cryptogrphy and Mathematics, Kookmin Uni.\includegraphics[height=1.5cm]{school_logo.jpg}}
+\fancyfoot{}
+\fancyfoot[C]{-\thepage-}
+
+\input{cryptanalysis-note-thm}
+\input{cryptanalysis-note-command}
+
+\setstretch{1.25}
+\begin{document}
+\pagenumbering{arabic}
+\begin{center}
+	\huge\textbf{Differential Cryptanalysis}\\
+	\vspace{0.5em}
+	\normalsize{\today}\\
+	\vspace{0.5em}
+	\large\textbf{Ji, Yong-hyeon}\\
+	\vspace{0.5em}
+\end{center}
+
+\section{DDT}
+
+\begin{itemize}
+	\item Motivation
+	\item Sequences of Bits
+	\item The XOR operation
+	\item Properties of XOR
+	\item Difference of Sets
+	\item Difference of Sets of a S-Box
+	\item The DDT of a S-Box
+	\item Properties of the DDT
+	\item The DDT and Probabilities
+	\item The DDT of a Linear S-Box
+	\item The DDT of a XOR S-Box
+	\item Code for the DDT
+	\item The DDT's of the S-Boxes of DES
+	\item The DDT's of the Rijndael S-Box
+\end{itemize}
+\newpage
+
+
+\newpage
+\begin{remark}
+%	\ \\ \adjustbox{scale=1, center}{
+%		\begin{tikzcd}
+%			A \arrow[rr, "f"] \arrow[rrdd, "g\circ f" description] \arrow["\mathsf{id}_A"', loop, distance=2em, in=215, out=145] &  & B \arrow[dd, "g"] \arrow["\mathsf{id}_B"', loop, distance=2em, in=35, out=325] \\
+%			&  &                                                                      \\
+%			&  & C \arrow["\mathsf{id}_C"', loop, distance=2em, in=305, out=235]               
+%	\end{tikzcd}}
+	To describe a acategory it is necessary to specify:
+	\begin{itemize}
+		\item (Objects) $\obj{\category}=\set{A,B,C,D,E\dots}$\\
+		\vspace{8pt}
+		\begin{figure}[h!]\centering
+			\begin{tikzcd}[remember picture, cells={nodes={draw=none}}]
+				| [alias=A] | A &  & B &  & D \\
+				&  &   &  &   \\
+				&  & C &  & | [alias=E] | E
+			\end{tikzcd}
+			
+			\begin{tikzpicture}[overlay, remember picture]
+				% Calculate bounding box coordinates
+				\coordinate (TopLeft) at ($(A.north west) + (-0.5,0.5)$);
+				\coordinate (BottomRight) at ($(E.south east) + (0.5,-0.5)$);
+				% Draw rounded rectangle
+				\draw[rounded corners, thick, red] (TopLeft) rectangle (BottomRight);
+				% Label the rectangle
+				\node at ($(TopLeft)!0.5!(BottomRight) + (0,1.75)$) [above] {$\category$};
+			\end{tikzpicture}
+		\end{figure}
+		
+		\item (Morphisms) $\homo{A,B}=\set{f,f',\dots}$; $\homo{A,B}\neq\homo{B,A}$\\
+		\vspace{8pt}
+		\begin{figure}[h!]\centering
+			\begin{tikzcd}[remember picture, cells={nodes={draw=none}}]
+				| [alias=A] | A \arrow[rr, "f"] \arrow[rrdd, "h"] \arrow[rr, "f'", bend left=49] \arrow["\mathsf{id}_A"', loop, distance=2em, in=215, out=145] \arrow[rrdd, dashed, bend right=49] \arrow[rrdd, dashed, bend right=49, shift right=3] &  & B \arrow[dd, "g"] \arrow[dd, "g'", bend left=49] \arrow["\mathsf{id}_B"', loop, distance=2em, in=35, out=325] &  & D \arrow[dd, dashed] \arrow[dd, dashed, bend left] \arrow[dd, dashed, bend right] \arrow["\mathsf{id}_D"', loop, distance=2em, in=125, out=55] \\
+				&  &                                                                                                               &  &                                                                                                                                                \\
+				&  & C \arrow["\mathsf{id}_C"', loop, distance=2em, in=305, out=235]                                               &  & | [alias=E] | E \arrow["\mathsf{id}_E"', loop, distance=2em, in=305, out=235]                                                                               
+			\end{tikzcd}
+			
+			\begin{tikzpicture}[overlay, remember picture]
+				% Calculate bounding box coordinates
+				\coordinate (TopLeft) at ($(A.north west) + (-1.5,1.5)$);
+				\coordinate (BottomRight) at ($(E.south east) + (1.5,-1.5)$);
+				% Draw rounded rectangle
+				\draw[rounded corners, thick, red] (TopLeft) rectangle (BottomRight);
+				% Label the rectangle
+				\node at ($(TopLeft)!0.5!(BottomRight) + (0,2.75)$) [above] {$\category$};
+			\end{tikzpicture}
+		\end{figure}
+		\item (Composition) \\ \adjustbox{scale=1, center}{
+			\begin{tikzcd}
+				&  & B \arrow[rrd, "g"] &  &   \\
+				A \arrow[rrrr, "g\circ f"] \arrow[rru, "f"] &  &                    &  & C
+		\end{tikzcd}}
+		\item (Identity) \begin{center}
+			\begin{tikzcd}
+				A \arrow[rrrr, "\mathsf{id}_B\circ f=f=f\circ \mathsf{id}_A"] \arrow["\mathsf{id}_A"', loop, distance=2em, in=125, out=55] &  &  &  & B \arrow["\mathsf{id}_B"', loop, distance=2em, in=125, out=55]
+			\end{tikzcd}
+		\end{center}
+		\item (Associativity) \begin{center}
+			\begin{tikzcd}
+				A \arrow[rr, "f"] \arrow[rrrr, "g\circ f", bend left] \arrow[rrrrrr, "h\circ(g\circ h)" description, bend left, shift left=3] \arrow[rrrrrr, "(h\circ g)\circ f" description, bend right, shift right=3] &  & B \arrow[rr, "g"] \arrow[rrrr, "h\circ g", bend right] &  & C \arrow[rr, "h"] &  & D
+			\end{tikzcd}
+		\end{center}
+	\end{itemize}
+\end{remark}
+
+\vfill
+\section{Examples}
+
+\begin{example}[Trivial Category]
+\ \begin{itemize}
+	\item $\obj{\category}=\set{A}$
+	\item $\homo{A,A}=\set{\id_A}$
+\end{itemize}
+\adjustbox{scale=1.25,center}{
+\begin{tikzcd}
+	A \arrow["\mathsf{id}_A"', loop, distance=2em, in=35, out=325]
+\end{tikzcd}}
+\end{example}
+
+\begin{example}
+	\ \begin{itemize}
+		\item $\obj{\category}=\set{A,B}$
+		\item $\homo{A,B}=\set{f}$
+		\item $\homo{B,A}=\emptyset$
+	\end{itemize}
+	\adjustbox{scale=1.25,center}{
+		\begin{tikzcd}
+			A \arrow[r, "f"] & B
+	\end{tikzcd}}
+\end{example}
+
+\begin{example}
+	Let $(G,*)$ be a group. \begin{itemize}
+		\item $\obj{\category}=\set{X}$
+		\item $\homo{X,X}=\set{G}$
+		\item Define $g\circ f:=g*f$
+	\end{itemize}
+\end{example}
+
+\begin{example}
+\ \begin{itemize}
+	\item \textbf{Set};\quad $$\text{Set}\xrightarrow[\text{Function}]{}\text{Set}$$
+	\item \textbf{Grp};\quad $$\text{Group}\xrightarrow[\text{Homomorphism}]{}\text{Group}$$
+	\item \textbf{Top};\quad $$\text{Topological Space}\xrightarrow[\text{Continuous Map}]{}\text{Topological Space}$$
+	\item \textbf{Vect}$_K$;\quad $$\text{Vector Space}\xrightarrow[\text{Linear Transformation}]{}\text{Vector Space}$$
+\end{itemize}
+\end{example}
+
+\newpage
+\begin{example}
+	\ \begin{itemize}
+		\item 
+		$f:x\to y$ if and only if $x\leq y$\\
+		\adjustbox{scale=1.25, center}{
+			\begin{tikzcd}
+				x \arrow[rr, "f"]            &  & y \arrow[rr, "g"] &  & z \\
+				x \arrow[rrrr, "h"] &  &                   &  & z
+		\end{tikzcd}}
+		\item $\id_x:x\to x$ if and only if $x\leq x$
+	\end{itemize}
+	\[
+	\begin{array}{c}
+		(\R,\leq) \\ \text{Real Number}\xrightarrow[\text{Ordering}]{}\text{Real Number}
+	\end{array}
+	\]
+\end{example}
+
+\vfill
+\section{Product and Dual Categories}
+
+\subsection{Product Categories}
+\[
+\mathcal{C}\times\mathcal{D}
+\]
+\begin{align*}
+\obj{(\mathcal{C}\times\mathcal{D})}&=\obj{\mathcal{C}}\times\obj{\mathcal{D}}\\
+\mathsf{hom}_{\mathcal{C}\times\mathcal{D}}((A,B),(A',B'))&=\mathsf{hom}_\category(A,A')\times\mathsf{hom}_{\mathcal{D}}(B,B')
+\end{align*}
+\[\begin{array}{cc}
+	\mathcal{C} &\mathcal{D} \\ A\xrightarrow{f}A' & B\xrightarrow{g}B'
+\end{array}\]
+\[\begin{array}{c}
+	\mathcal{C} \times\mathcal{D} \\ (A,B)\xrightarrow{(f,g)}(A',B')
+\end{array}\]
+
+\subsection{Dual Categories}
+\[\begin{array}{cc}
+	\category & \mathcal{C}^\op \\ A\to B & A\from B
+\end{array}\]
+
+\newpage
+\section{Functors}
+\begin{align*}
+	F:\category&\to\mathcal{D}\\
+	F:\obj{\category}&\to\obj{\mathcal{D}}\\
+	F:\homo{\category}&\to\homo{\mathcal{D}}\\
+\end{align*}
+
+\[
+\fullfunction{F}{\category}{\mathcal{D}}{A}{F(A)}
+\]
+\adjustbox{scale=1.25,center}{
+\begin{tikzcd}
+	A \arrow[rr, "f"]        & {} \arrow[d, maps to] & B    \\
+	F(A) \arrow[rr, "F(f)"'] & {}                    & F(B)
+\end{tikzcd}}
+
+\newpage
+\section{Natural Transformation}
+\begin{itemize}
+	\item Let \[
+	\begin{tikzcd}
+		\mathcal{C} \arrow[r, "F", shift left] \arrow[r, "G"', shift right] & \mathcal{D}
+	\end{tikzcd}
+	\] be categories and functors.
+	\item A map 
+	% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBoBGAXVJADcBDAGwFcYkQAdDgW3pwAsAxk2ABhAL4hxpdJlz5CKAEwVqdJq3ZdeA4Y2AARSdNnY8BIuVLE1DFm0QgpMkBjMLLpJbY0On4tRgoAHN4IlAAMwAnCG4kMhAcCCQrEAAjGDAoJAA2BLtNRwAxEBo4fiwInCQAWgBWGkZ6DMYABTlzRRAsMGxYZ0iYuMQEpJSaDKzavJoCvwBxUpByyurEBpAmlvb3C0cevrYTEGjYpBVE5MQAZkaevygIZjTGNhp+GHpsxDBmRkYaDh6FhGOxIGA3ptmjA2h0PPtelh+rNfFoODAgVJKOIgA
+	\adjustbox{scale=1.25,center}{\begin{tikzcd}
+		& {} \arrow[dd, "\eta" description, Rightarrow] &             \\
+		\mathcal{C} \arrow[rr, "F" description, bend left=60, shift left=5] \arrow[rr, "G" description, bend right=60, shift right=5] &                                               & \mathcal{D} \\
+		& {}                                            &            
+	\end{tikzcd}}
+	is a natural transformation
+\end{itemize}
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBoBGAXVJADcBDAGwFcYkQANEAX1PU1z5CKAEyli1Ok1bsAYgAoOASh58QGbHgJExIyQxZtEIAOKKVvfpqE6K+6UZA9JMKAHN4RUADMAThABbJHIaHAgkMSlDdgAdGJgcegB9LksQP0CkMhAw4JpGLDBHKAgcHFcQGgMZY1lVH38gxGzcxEjqxxNKkAKi9hKyivz6ACMYRgAFAS1hEF8sNwALHHr0xqzQ8MQAZnzC4ohmEcY2GkWYeigkMGZGRlD6LEZ2SD6qh1j4xO7GUfGp6zaYyFbCwZzcIA
+\adjustbox{scale=1.25,center}{\begin{tikzcd}
+	&  & F(A)\in\obj{\mathcal{D}} \arrow[dd, "\eta_A"] \\
+	A\in\obj{\category} \arrow[rru, "F", dotted] \arrow[rrd, "G"', dotted] \arrow[rr, "\eta" description, Rightarrow] &  & {}                        \\
+	&  & G(A)\in\obj{\mathcal{D}}                  
+\end{tikzcd}}
+
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAEEQBfU9TXfIRRkATFVqMWbAELdeIDNjwEiI8uPrNWiEADEAFOwCUcvksFEALOuqapOgOKGTPMwJUo1Y25O1790i7yiu5CyNbeElpsToGmCvzKYQDMNlH2IPEhSUSpkXZ+3OIwUADm8ESgAGYAThAAtkhkIDgQSACMPtE6VfG1DUhqLW2I1ul+BlVB1XWNiKnDSACsXRlOU32zg9StSAsFbAA6hzA4dAD6nNQMdABGMAwACokWOjVYpQAWOJsDozsjFbjI4nM7nWSuED9OZDXaIIEMLBgPxQOhwT4lEDXO4PZ7mDwgJHYWBY4E6fTHGAADywcBwcAAhEYAPy-ObNOFDRHIthQCA4HCY1YTUk3e5PF4EolYEmQ6EdAFIMYHHS6UVIlH8wVQUU4iX4oSEsDE1hyraIDkjBb3MA6xAANma3M1AqFZJADl14rxoTY0tl8nliE6i3h1w1vK1bptdoAtI7hTEvbjJYb-abA+bLUh7dQY0qAJzhnk6PlMW4MVjY72pv3GmVV92Us6kjF0O1gJgMBg7OhYBhsSA8s1-ENwgDseZgtqQscsRZAzsj5crrZg7aQne7vf7g4IjbFKYNdZNpJVIGbdCKXCAA
+\adjustbox{scale=1.25,center}{\begin{tikzcd}
+		A \arrow[dd, "f"] \arrow[rr, "F" description, dotted] \arrow[rrrr, "G" description, dotted, bend left=60] \arrow[rrr, "\eta" description, Rightarrow, bend left=49] &  & F(A) \arrow[dd, "F(f)"] \arrow[rr, "\eta_A"'] \arrow[rrdd, "(\exists!)?" description, dashed] & {} & G(A) \arrow[dd, "G(f)"] \\
+		&  &                                                                                               &    &                         \\
+		B \arrow[rr, "F" description, dotted] \arrow[rrrr, "G" description, dotted, bend right=60] \arrow[rrr, "\eta" description, Rightarrow, bend right=49]               &  & F(B) \arrow[rr, "\eta_B"]                                                                     & {} & G(B)                   
+\end{tikzcd}}
+
+\newpage
+\footer{Department of Information Security, Cryptology and Mathematics\\
+	College of Science and Technology\\
+	Kookmin University}
+
+\newpage
+\input{cryptanalysis-note1-ref}
+%\bibliography{category-theory-note-ref}
+%\bibliographystyle{abbrv}
+\end{document}
