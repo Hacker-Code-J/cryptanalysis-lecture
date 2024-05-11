@@ -55,16 +55,157 @@
 	\item The DDT's of the Rijndael S-Box
 \end{itemize}
 \newpage
+\paragraph{Motivation}
 
+\begin{itemize}
+	\item Let $S:\F_2^n\to\F_2^m$ be a S-Box.
+	\item We define the \textbf{differential distribution table} $\mathcal{D}_S\in M_{2^n\times 2^m}(\Z_{\geq 0})$, abbreviated as $\ddt$.
+\end{itemize}
+
+\paragraph{Sequences of Bits}
+\begin{itemize}
+	\item $\F_2\set{0,1}$
+	\item $\F_2^n=\set{(x_1,\dots,x_n):x_i\in\F_2}$ and $\abs{\F_2^n}=2^n$
+	\item $\F_2^n\simeq\Z_{2^n}=\set{0,1,\dots,2^n-1}$
+\end{itemize}
+
+\paragraph{The XOR operation}
+\begin{itemize}
+	\item $\oplus:\F_2\times\F_2\to\F_2$.
+	\item The operation XOR is like addition modulo 2.
+	\item It is denoted by $\oplus$.
+\end{itemize}
+\begin{center}
+	\begin{tabular}{c|c||c}
+		\toprule[1.2pt]
+		$x$ & $y$ & $x\oplus y$\\
+		\hline
+		0 & 0 & 0\\
+		\hline
+		0 & 1 & 1\\
+		\hline
+		1 & 0 & 1\\
+		\hline
+		1 & 1 & 0\\
+		\bottomrule[1.2pt]
+	\end{tabular}
+\end{center}
+
+\begin{itemize}
+	\item 
+	\begin{align*}
+		\lnot (p\iff q) \\
+		\lnot ((p\implies q) \land (q\implies p))\\
+		\lnot ((\lnot p \lor q) \land (\lnot q\lor p))\\
+		(p\land \lnot q)\lor(q\land\lnot p) \\
+		[(p\land\lnot q)\lor q]\land[(p\land\lnot q)\lor\lnot p] \\ 
+		[(p\lor q)\land(\lnot q\lor q)]\land[(p\lor\lnot p)\land(\lnot q\lor\lnot p)] \\
+		(p\lor q)\land ()
+	\end{align*}
+	\item \begin{align*}
+		(p\lor q)\land(\lnot(p\land q))\\
+		(p\lor q)\land(\lnot p\lor\lnot q))\\
+		((p\lor q)\land\lnot p)\lor	((p\lor q)\land\lnot q)	\\
+		[(p\land\lnot p)\lor(q\land\lnot p)]\lor [(p\land\lnot q)\lor(q\land\lnot q)] \\
+		[F\lor(q\land\lnot p)]\lor [(p\land\lnot q)\lor F] \\
+		(q\land\lnot p)\lor (p\land\lnot q)
+	\end{align*}
+\end{itemize}
+
+\paragraph{Difference of Sets}
+\begin{definition}[Difference Set]
+	Given $\alpha\in\F_2^n$, we define the subset $\Delta_\alpha$ of $\F_2^n\times\F_2^n$ by \[
+	\Delta_\alpha=\set{(x_1,x_2)\in\F_2^n\times\F_2^n:x_1\oplus x_2=\alpha}\subseteq\F_2^n\times\F_2^n.
+	\] We call $\Delta_\alpha$ the \textbf{difference set} of $\alpha$.
+\end{definition}
+
+\begin{proposition}
+	For any $\alpha\in\F_2^n$ the set $\Delta_\alpha$ contains $2^n$ elements and can be expressed as \[
+	\Delta_\alpha=\set{(x,x\oplus\alpha):x\in\F_2^n}.
+	\]
+\end{proposition}
+\begin{proof}
+	Let \begin{align*}
+		S&:=\set{(x_1,x_2)\in\F_2^n\times\F_2^n:x_1\oplus x_2=\alpha}, \\
+		T&:=\set{(x,x\oplus\alpha):x\in\F_2^n}.
+	\end{align*} We must show that $S=T$:
+	\begin{itemize}
+		\item[($S\subseteq T$)] Let $(x,y)\in S$ then by definition $x\oplus y=\alpha$.
+		Since $(x\oplus y=\alpha)\Rightarrow (y=x\oplus \alpha)$, \[
+		(x,y)=(x,x\oplus \alpha)\in T.
+		\]
+		\item[($T\subseteq S$)] Let $(x,x\oplus\alpha)\in T$. Since \[
+		x\oplus(x\oplus\alpha)=\alpha,
+		\] $(x,x\oplus\alpha)\in S$.
+	\end{itemize}
+\end{proof}
+
+\begin{itemize}
+	\item So $\Delta_\alpha\subseteq\F_2^n\times\F_2^n$ is bijective with $\F_2^n$
+	\item A bijective map is given by \[
+	\fullfunction{\varphi}{\F_2^n}{\Delta_\alpha}{x}{(x,x\oplus\alpha)}
+	\] 
+\end{itemize}
+
+\begin{itemize}
+	\item Let us consider the case $\alpha=0$ for the set $\Delta_\alpha$.
+	\item When $\alpha=0$ the difference set is \[
+	\Delta_0=\set{(x,x):x\in\F_2^n}
+	\]
+	\item This set is often called the \textbf{diagonal} of $\F_2^n\times\F_2^n$.
+\end{itemize}
+
+\paragraph{Difference Sets of A S-BOX}
+
+\begin{definition}
+	Let $S:\F_2^n\to\F_2^n$ be a S-Box, and let $\alpha\in\F_2^n$ and $\beta\in\F_2^m$. We define the \textbf{difference set} of $S$ w.r.t. $\alpha$ and $\beta$ by \[
+	\Delta_{\alpha,\beta}=\set{(x_1,x_2)\in\F_2^n\times\F_2^n:x_1\oplus x_2=\alpha\ \text{and}\ S(x_1)\oplus S(x_2)=\beta}\subseteq\F_2^n\times\F_2^n.
+	\] That is, $\Delta_{\alpha,\beta}$ is the set of ordered pairs of elements from $\F_2^n$ which have a difference of $\alpha$ and such that their images under $S$ have a difference of $\beta$.
+\end{definition}
+\begin{remark}
+	This can also written as \[
+	\Delta_{\alpha,\beta}=\set{(x_1,x_2)\in\Delta_\alpha:(S(x_1),S(x_2))\in\Delta_\beta}\subseteq\Delta_a
+	\]
+\end{remark}
+\begin{note}
+	$\Delta_{\alpha,\beta}$ is always defined w.r.t. a given S-Box $S$. If we want to make this dependence explicit we can write $\Delta_{\alpha,\beta}^S$.
+\end{note}
+
+\begin{note}
+	We define $d_{\alpha,\beta}$ to be the cardinality of the finite set $\Delta_{\alpha,\beta}$, namely \[
+	d_{\alpha,\beta}:=\abs{\Delta_{\alpha,\beta}}\in\Z_{\geq 0}
+	\]
+\end{note}
+\begin{itemize}
+	\item When $\alpha=0$ and $\beta=0$ we have \[
+	\Delta_{0,0}=\Delta_0=\set{(x,x):x\in\F_2^n}.
+	\]
+	\item In general when $\alpha=0$ we find that \[
+	\Delta_{0,\beta}=\begin{cases}
+		\Delta_0 &:\beta=0\\
+		\emptyset &:\beta\neq 0
+	\end{cases}
+	\] Since $\abs{\Delta_0}=2^n$ and $\abs{\emptyset}=0$, \[
+	d_{0,\beta}=\begin{cases}
+		2^n &:\beta=0 \\
+		0 &:\beta\neq 0
+	\end{cases}
+	\]
+\end{itemize}
+
+\begin{proposition}
+	The integer $d_{\alpha.\beta}\in\Z_{\geq 0}$ is always even.
+\end{proposition}
+\begin{proof}
+	Recall that $0$ is even.
+	\begin{itemize}
+		\item[] (Case I) When $\alpha=0$, we saw either $d_{0,\beta}\in\set{0,2^n}$ and these are even in either case.
+		\item[] (Case II) Suppose that $\alpha\neq 0$ and $\Delta_{\alpha,\beta}\neq\emptyset$.
+	\end{itemize}
+\end{proof}
 
 \newpage
 \begin{remark}
-%	\ \\ \adjustbox{scale=1, center}{
-%		\begin{tikzcd}
-%			A \arrow[rr, "f"] \arrow[rrdd, "g\circ f" description] \arrow["\mathsf{id}_A"', loop, distance=2em, in=215, out=145] &  & B \arrow[dd, "g"] \arrow["\mathsf{id}_B"', loop, distance=2em, in=35, out=325] \\
-%			&  &                                                                      \\
-%			&  & C \arrow["\mathsf{id}_C"', loop, distance=2em, in=305, out=235]               
-%	\end{tikzcd}}
 	To describe a acategory it is necessary to specify:
 	\begin{itemize}
 		\item (Objects) $\obj{\category}=\set{A,B,C,D,E\dots}$\\
