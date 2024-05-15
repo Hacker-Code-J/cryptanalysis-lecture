@@ -194,6 +194,7 @@ Let us consider the case $\alpha=0$ for the set $\Delta_\alpha$. When $\alpha=0$
 
 \newpage
 \subsection{Difference Sets of a S-BOX}
+\adjustbox{scale=.9,center}{
 \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
 	%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
 	
@@ -230,7 +231,7 @@ Let us consider the case $\alpha=0$ for the set $\Delta_\alpha$. When $\alpha=0$
 	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (98.45,129.8) .. controls (98.45,128.92) and (99.16,128.22) .. (100.03,128.22) .. controls (100.91,128.22) and (101.61,128.92) .. (101.61,129.8) .. controls (101.61,130.67) and (100.91,131.38) .. (100.03,131.38) .. controls (99.16,131.38) and (98.45,130.67) .. (98.45,129.8) -- cycle ;
 	
 	% Text Node
-	\draw (66.77,52.73) node [anchor=north west][inner sep=0.75pt]    {$F_{2}^{n} \times F_{2}^{n}$};
+	\draw (66.77,52.73) node [anchor=north west][inner sep=0.75pt]    {$\F_{2}^{n} \times \F_{2}^{n}$};
 	% Text Node
 	\draw (85.98,95.35) node [anchor=north west][inner sep=0.75pt]    {$\Delta _{\alpha }$};
 	% Text Node
@@ -238,26 +239,23 @@ Let us consider the case $\alpha=0$ for the set $\Delta_\alpha$. When $\alpha=0$
 	% Text Node
 	\draw (80.92,152.77) node [anchor=north west][inner sep=0.75pt]  [color={rgb, 255:red, 74; green, 144; blue, 226 }  ,opacity=1 ]  {$\Delta _{\alpha ,\beta }$};
 	% Text Node
-	\draw (596.77,17.07) node [anchor=north west][inner sep=0.75pt]    {$F_{2}^{n}$};
+	\draw (596.77,17.07) node [anchor=north west][inner sep=0.75pt]    {$\F_{2}^{n}$};
 	% Text Node
-	\draw (597.44,170.4) node [anchor=north west][inner sep=0.75pt]    {$F_{2}^{m}$};
+	\draw (597.44,170.4) node [anchor=north west][inner sep=0.75pt]    {$\F_{2}^{m}$};
 	% Text Node
 	\draw (604.86,65.73) node [anchor=north west][inner sep=0.75pt]    {$\alpha $};
 	% Text Node
 	\draw (604.57,216.02) node [anchor=north west][inner sep=0.75pt]    {$\beta $};
 	% Text Node
-	\draw (374.1,176.73) node [anchor=north west][inner sep=0.75pt]    {$F_{2}^{m} \times F_{2}^{m}$};
+	\draw (374.1,176.73) node [anchor=north west][inner sep=0.75pt]    {$\F_{2}^{m} \times \F_{2}^{m}$};
 	% Text Node
 	\draw (274.43,72.23) node [anchor=north west][inner sep=0.75pt]  [font=\small]  {$( x_{1} ,x_{2}) \mapsto \ \alpha =x_{1} \oplus x_{2}$};
 	% Text Node
 	\draw (180.93,182.23) node [anchor=north west][inner sep=0.75pt]  [font=\small]  {$( x_{1} ,x_{2}) \mapsto ( S( x_{1}) ,S( x_{2}))$};
 	% Text Node
 	\draw (396.83,152.23) node [anchor=north west][inner sep=0.75pt]  [font=\small]  {$( S( x_{1}) ,S( x_{2})) \mapsto \beta =S( x_{1}) \oplus S( x_{2})$};
-	
-	
-\end{tikzpicture}
-
-
+\end{tikzpicture}}
+\vspace{12pt}
 \begin{defbox}{Difference Set of a S-BOX}
 Let $S:\F_2^n\to\F_2^m$ is a S-box. Let $\alpha\in\F_2^n$ and $\beta\in\F_2^m$. Consider \begin{align*}
 	\Delta_\alpha&=\set{(x_1,x_2):x_1\oplus x_2=\alpha\in\F_2^n}\subseteq\F_2^n\times\F_2^n\quad \text{and}\\
@@ -277,10 +275,28 @@ We define the \textbf{difference set} of $S$ with respect to $\alpha$ and $\beta
 \end{remark}
 \vspace{12pt}
 \begin{defbox}{Cardinality of a Difference Set}
-	We define $d_{\alpha,\beta}$ to be the cardinality of the finite set $\Delta_{\alpha,\beta}$, namely \[
-	d_{\alpha,\beta}:=\abs{\Delta_{\alpha,\beta}}\in\Z_{\geq 0}.
+	We define $\delta_{\alpha,\beta}$ to be the cardinality of the finite set $\Delta_{\alpha,\beta}$, namely \[
+	\delta_{\alpha,\beta}:=\abs{\Delta_{\alpha,\beta}}\in\Z_{\geq 0}.
 	\]
 \end{defbox}
+
+\vspace{12pt}
+\begin{probox}{}
+	\begin{proposition}
+		\[
+		\delta_{\alpha,\beta}=\#\set{x\in\F_2^n:S(x)\oplus S(x\oplus\alpha)=\beta\in\F_2^m}.
+		\]
+	\end{proposition}
+\end{probox}
+\begin{proof}
+	\begin{align*}
+		\Delta_{\alpha ,\beta }=\Delta_{\alpha}\cap\Delta_{\beta}
+		&=\set{(x_1,x_2):x_1\oplus x_2=\alpha}\cap \set{(x_1,x_2):S(x_1)\oplus S(x_2)=\beta}\\
+		&=\set{(x,x\oplus\alpha):x\in\F_2^n}\cap \set{(x_1,x_2):S(x_1)\oplus S(x_2)=\beta} \\
+		&=\set{x\in\F_2^n:S(x)\oplus S(x\oplus \alpha)=\beta\in\F_2^m}.
+	\end{align*}
+\end{proof}
+
 \begin{remark}
 \ \begin{itemize}
 	\item When $\alpha=0$ and $\beta=0$ we have
@@ -291,27 +307,124 @@ We define the \textbf{difference set} of $S$ with respect to $\alpha$ and $\beta
 		\emptyset &:\beta\neq 0
 	\end{cases}$
 	\item  Since $\abs{\Delta_0}=2^n$ and $\abs{\emptyset}=0$,\quad
-	$d_{0,\beta}=\begin{cases}
+	$\delta_{0,\beta}=\begin{cases}
 		2^n &:\beta=0 \\
 		0 &:\beta\neq 0
 	\end{cases}$.
 \end{itemize}
 \end{remark}
 
-\newpage
-
-\begin{proposition}
-	The integer $d_{\alpha.\beta}\in\Z_{\geq 0}$ is always even.
-\end{proposition}
+\begin{probox}{}
+	\begin{proposition}
+		The integer $\delta_{\alpha,\beta}\in\Z_{\geq 0}$ is always even.
+	\end{proposition}
+\end{probox}
 \begin{proof}
 	Recall that $0$ is even.
 	\begin{itemize}
-		\item[] (Case I) When $\alpha=0$, we saw either $d_{0,\beta}\in\set{0,2^n}$ and these are even in either case.
-		\item[] (Case II) Suppose that $\alpha\neq 0$ and $\Delta_{\alpha,\beta}\neq\emptyset$.
+		\item[] (Case I) When $\alpha=0$, we saw either $\delta_{0,\beta}\in\set{0,2^n}$ and these are even in either case.
+		\item[] (Case II) Suppose that $\alpha\neq 0$ and $\Delta_{\alpha,\beta}\neq\emptyset$. Let $(x_1,x_2)\in\Delta_{\alpha,\beta}$ then \[
+		(x_2,x_1)\in\Delta_{\alpha,\beta}\quad\text{and}\quad x_1\neq x_2.
+		\] Therefore $(x_1,x_2)\neq(x_2,x_1)$. So if we pair $(x_1,x_2)$ and $(x_2,x_1)$, we can partition $\Delta_{\alpha,\beta}$ into subsets, each subset having cardinality of $2$.
 	\end{itemize}
 \end{proof}
 
+\section{The DDT of a S-Box}
+\subsection{Definition and Property}
+
+\begin{defbox}{Differential Distribution Table}
+Let $S:\F_2^n\to\F_2^m$ be a S-Box. The \textbf{differential distribution table} (abbreviated DDT) of $S$
+is a table (or matrix) with $2^n$-rows and $2^m$-columns. We denote it by $\mathcal{D}_S$ or just by $\mathcal{D}$.
+\begin{itemize}
+	\item The rows are indexed by the elements $\alpha\in\F_2^n=\set{0,\dots,2^n-1}$.
+	\item The columns are indexed by the elements $\beta\in\F_2^m=\set{0,\dots,2^m-1}$.
+	\item The entry at row index $\alpha$ and column index $\beta$ is given by $\delta_{\alpha,\beta}=\abs{\Delta_{\alpha,\beta}}$. That is, \[
+	\mathcal{D}=(\delta_{\alpha,\beta})_{2^n\times 2^m}.
+	\] 
+\end{itemize}
+\end{defbox}
+\begin{remark}
+The DDT of a S-Box is just table of all the possible integer values  $\delta_{\alpha,\beta}$.
+\begin{table}[h!]\centering
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{c||cccccc}
+		$\mathcal{D}$ & 0 & 1 & $\cdots$ & $\beta$ & $\cdots$ & $2^{m}-1$\\
+		\hline
+		\hline
+		0 & $2^{n}$ & 0 & &$\cdots$ & & 0 \\
+		1 &  \\
+		$\vdots$ &  \\
+		$\alpha$ &  & & & $\delta_{\alpha,\beta}$& \\
+		$\vdots$ & \\
+		$2^n-1$ &  \\
+	\end{tabular}
+\end{table}
+\end{remark}
+\vspace{12pt}
+\begin{probox}{}
+\begin{proposition}
+Let $S:\F_2^n\to\F_2^m$ be a S-Box with differential distribution table $\ddt$. The following properties hold for $\ddt$. \begin{enumerate}[(1)]
+	\item Every entry in $\ddt$ is a non-negative even integer between $0$ and $2^n$.
+	\item The top-left entry of $\ddt$ is $2^n$.
+	\item The first row of $\ddt$ consists of all zeros except the first entry which is $2^n$.
+	\item If $S$ is one-to-one then the first column of $\ddt$ consists all zeros except the first entry which is $2^n$.
+	\item The sum of the entries of each row is $2^n$.
+	\item If $S$ is bijective then every row and column of the DDT add up to $2^n$.
+\end{enumerate}
+\end{proposition}
+\end{probox}
+
 \newpage
+\subsection{The DDT and Probabilities}
+When designing and analyzing attacks by differential cryptanalysis, we often want to translate the integer values from the DDT into probabilities.
+
+\begin{note}
+The \textbf{probability} $p$ that $E$ occurs is defined to be the quotient of the cardinalities of the sets $E$ and $\Omega$: \[
+p=\frac{\abs{E}}{\abs{\Omega}}.
+\]
+\end{note}
+
+\begin{defbox}{Probability of DDT}
+\begin{definition}
+	Let the universe is $\Omega=\Delta_\alpha$ and the event $E=\Delta_{\alpha,\beta}$. We define probability $p_{\alpha,\beta}$ as follows: \[
+	p_{\alpha,\beta}=\frac{\abs{\Delta_{\alpha,\beta}}}{\abs{\Delta_\alpha}}=\frac{\delta_{\alpha,\beta}}{2^n}.
+	\]
+\end{definition}
+\end{defbox}
+\begin{remark}
+	Equivalently we can regard the universe $\Omega=\F_2^n$ and the event as the set \[
+	E=\set{x\in\F_2^n:S(x)\oplus S(x\oplus\alpha)=\beta}.
+	\]
+\end{remark}
+
+\section{The DDT of a Linear S-Box}
+\begin{defbox}{Linear S-Box}
+\begin{definition}
+A S-Box $L:\F_2^n\to\F_2^m$ is said to be \textbf{linear} if \[
+x_1,x_2\in\F_2^n\implies L(x_1\oplus x_2)=L(x_1)\oplus L(x_2).
+\]
+\end{definition}
+\end{defbox}
+\vspace{12pt}
+\begin{probox}{}
+\begin{proposition}
+Let $L:\F_2^n\to\F_2^m$ be a linear S-Box. Let $\alpha\in\F_2^n$ and $\beta\in\F_2^n$. Then the difference sets of $L$ and their cardinalities are given by \[
+\Delta_{\alpha,\beta}=\begin{cases}
+\Delta_\alpha &:\beta=L(\alpha)\\
+\emptyset &:\beta\neq L(\alpha)
+\end{cases},\quad \delta_{\alpha,\beta}=\begin{cases}
+2^n &:\beta=L(\alpha)\\
+0 &:\beta\neq L(\alpha)
+\end{cases}.
+\] That is, every row of the DDT of $L$ consists of all zeros except one entry with a value of $2^n$.
+\end{proposition}
+\end{probox}
+\begin{proof}
+	Let $\alpha\in\F_2^n$. Assume that $(x_1,x_2)\in\Delta_{\alpha}$, namely $x_1\oplus x_2=\alpha$ then \[
+	L(x_1)\oplus L(x_2)=L(x_1\oplus x_2)=L(\alpha).
+	\] So $(x_1,x_2)\in\Delta_{\alpha,\beta}\iff\beta=L(\alpha)$.
+\end{proof}
+
 \footer{Department of Information Security, Cryptology and Mathematics\\
 	College of Science and Technology\\
 	Kookmin University}
