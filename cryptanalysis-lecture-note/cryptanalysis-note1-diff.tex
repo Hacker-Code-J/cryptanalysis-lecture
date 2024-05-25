@@ -378,16 +378,10 @@ Let $S:\F_2^n\to\F_2^m$ be a S-Box with differential distribution table $\ddt$. 
 \subsection{The DDT and Probabilities}
 When designing and analyzing attacks by differential cryptanalysis, we often want to translate the integer values from the DDT into probabilities.
 
-\begin{note}
-The \textbf{probability} $p$ that $E$ occurs is defined to be the quotient of the cardinalities of the sets $E$ and $\Omega$: \[
-p=\frac{\abs{E}}{\abs{\Omega}}.
-\]
-\end{note}
-
 \begin{defbox}{Probability of DDT}
 \begin{definition}
 	Let the universe is $\Omega=\Delta_\alpha$ and the event $E=\Delta_{\alpha,\beta}$. We define probability $p_{\alpha,\beta}$ as follows: \[
-	p_{\alpha,\beta}=\frac{\abs{\Delta_{\alpha,\beta}}}{\abs{\Delta_\alpha}}=\frac{\delta_{\alpha,\beta}}{2^n}.
+	p_{\alpha,\beta}=\frac{\abs{E}}{\abs{\Omega}}=\frac{\abs{\Delta_{\alpha,\beta}}}{\abs{\Delta_\alpha}}=\frac{\delta_{\alpha,\beta}}{2^n}.
 	\]
 \end{definition}
 \end{defbox}
@@ -397,7 +391,7 @@ p=\frac{\abs{E}}{\abs{\Omega}}.
 	\]
 \end{remark}
 
-\section{The DDT of a Linear S-Box}
+\subsection{The DDT of a Linear S-Box}
 \begin{defbox}{Linear S-Box}
 \begin{definition}
 A S-Box $L:\F_2^n\to\F_2^m$ is said to be \textbf{linear} if \[
@@ -424,6 +418,53 @@ Let $L:\F_2^n\to\F_2^m$ be a linear S-Box. Let $\alpha\in\F_2^n$ and $\beta\in\F
 	L(x_1)\oplus L(x_2)=L(x_1\oplus x_2)=L(\alpha).
 	\] So $(x_1,x_2)\in\Delta_{\alpha,\beta}\iff\beta=L(\alpha)$.
 \end{proof}
+
+\begin{remark}
+\ \begin{itemize}
+	\item In the context of probabilities this states \[
+	p_{\alpha,\beta}=\begin{cases}
+		1 &:\beta=L(\alpha)\\
+		0 &:\beta\neq L(\alpha)
+	\end{cases}
+	\]
+	\item So the DDT of a linear S-Box is not interesting since every entry is either $0$ or $2^n$.
+\end{itemize}
+\end{remark}
+
+\begin{note}
+\ \begin{itemize}
+	\item Note the DDT of a linear S-Box contains large values (namely, $2^n$, which is as large as an entry can be).
+	\item This shows that any block cipher that uses a linear S-Box for its ``confusion'' layer would have a catastrophic vulnerability. It would likely be vulnerable to an attack by differential cryptanalysis.
+	\item This is why the ``confusion'' layer is required to be non-linear, so we would never do this anyway.
+\end{itemize}
+\end{note}
+
+\newpage
+\subsection{The DDT of the XOR S-Box}
+\ \begin{itemize}
+	\item Let $k\in\F_2^n$ be fixed and define the bijective S-Box: \[
+	\fullfunction{S}{\F_2^n}{\F_2^n}{x}{x\oplus k}
+	\]
+	\item Note that $S(x_1\oplus x_2)\neq S(x_1)\oplus S(x_2)$ when $k\neq 0_n$
+	\item Therefore when $k\neq 0$ the S-Box $S$ is non-linear
+	\item Consider the equation for $S$ \[
+	S(x)\oplus S(x\oplus \alpha) = \beta
+	\]
+	\item By the definition of $S$ this is equivalent to \[
+	(x\oplus k)\oplus((x\oplus \alpha)\oplus k)=\beta
+	\]
+	\item Which is equivalent to $\alpha=\beta$.
+	\item We find the following properties hold for the XOR S-Box \[
+	\Delta_{\alpha,\beta}=\begin{cases}
+		\Delta_\alpha &:\alpha=\beta \\
+		\emptyset &:\alpha\neq\beta
+	\end{cases}\quad \delta_{\alpha,\beta}=\begin{cases}
+	2^n &:\alpha=\beta\\
+	0 &:\alpha\neq\beta
+\end{cases}
+	\]
+\end{itemize}
+
 
 \footer{Department of Information Security, Cryptology and Mathematics\\
 	College of Science and Technology\\

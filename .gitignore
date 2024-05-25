@@ -1,3 +1,6 @@
+*.dic
+*.txt
+
 asgmt2/debug
 asgmt2/tmto_table
 
