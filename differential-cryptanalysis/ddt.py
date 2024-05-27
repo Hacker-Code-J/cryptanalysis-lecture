@@ -43,5 +43,6 @@ def print_ddt_to_file(S, n, m):
 # 3-bit S-Box function
 S = [0, 1, 3, 2, 6, 7, 5, 4]
 S2 = [0, 1, 7, 2, 3, 4, 5, 6]
+S3 = [2, 3, 5, 6, 4, 7, 0, 1]
 
-print_ddt(S2, 3, 3)
+print_ddt(S3, 3, 3)

@@ -380,11 +380,12 @@ When designing and analyzing attacks by differential cryptanalysis, we often wan
 
 \begin{defbox}{Probability of DDT}
 \begin{definition}
-	Let the universe is $\Omega=\Delta_\alpha$ and the event $E=\Delta_{\alpha,\beta}$. We define probability $p_{\alpha,\beta}$ as follows: \[
-	p_{\alpha,\beta}=\frac{\abs{E}}{\abs{\Omega}}=\frac{\abs{\Delta_{\alpha,\beta}}}{\abs{\Delta_\alpha}}=\frac{\delta_{\alpha,\beta}}{2^n}.
+	Let the universe is $\Omega=\Delta_\alpha$ and the event $E=\Delta_{\alpha,\beta}$. We define probability $P[\alpha\to\beta]=p_{\alpha,\beta}$ as follows: \[
+	P[\alpha\to\beta]=p_{\alpha,\beta}=\frac{\abs{E}}{\abs{\Omega}}=\frac{\abs{\Delta_{\alpha,\beta}}}{\abs{\Delta_\alpha}}=\frac{\delta_{\alpha,\beta}}{2^n}.
 	\]
 \end{definition}
 \end{defbox}
+
 \begin{remark}
 	Equivalently we can regard the universe $\Omega=\F_2^n$ and the event as the set \[
 	E=\set{x\in\F_2^n:S(x)\oplus S(x\oplus\alpha)=\beta}.
