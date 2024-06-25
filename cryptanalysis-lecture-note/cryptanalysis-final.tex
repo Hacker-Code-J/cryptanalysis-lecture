@@ -1,0 +1,63 @@
+\documentclass[11pt,openany]{article}
+
+\input{cryptanalysis-note-setup}
+\input{cryptanalysis-note-tikz}
+%\input{../category-theory-setup-tcolorbox}
+% Header and footer formatting
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhf{}
+\rhead{\textcolor{TealBlue2}{\textbf{Cryptanalysis-FINAL}}}%\rule{3cm}{0.4pt}}
+\lhead{\textcolor{TealBlue2}{\textbf{Lecture-FINAL}}}
+% Define footer
+\newcommand{\footer}[1]{
+\begin{flushright}
+	\vspace{2em}
+	\includegraphics[width=2.5cm]{school_logo.jpg} \\
+	\vspace{1em}
+	\textcolor{TealBlue2}{\small\textbf{#1}}
+\end{flushright}
+}
+%\rfoot{\large Department of Information Security, Cryptogrphy and Mathematics, Kookmin Uni.\includegraphics[height=1.5cm]{school_logo.jpg}}
+\fancyfoot{}
+\fancyfoot[C]{-\thepage-}
+
+\input{cryptanalysis-note-thm}
+\input{cryptanalysis-note-tcolorbox}
+\input{cryptanalysis-note-command}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\xmark}{\ding{55}}%
+
+\setstretch{1.25}
+\begin{document}
+\pagenumbering{arabic}
+\begin{center}
+	\huge\textbf{Cryptanalysis - FINAL}\\
+	\vspace{0.5em}
+	\normalsize{\today}\\
+	\vspace{0.5em}
+	\large\textbf{Ji, Yong-hyeon}\\
+	\vspace{0.5em}
+\end{center}
+
+\section{2021}
+\input{cryptanalysis-final-2021}
+
+%\newpage
+%\section{2022}
+%\input{cryptanalysis-final-2022}
+
+\newpage
+\section{2023}
+\input{cryptanalysis-final-2023}
+
+\footer{Department of Information Security, Cryptology and Mathematics\\
+	College of Science and Technology\\
+	Kookmin University}
+
+\newpage
+%\input{cryptanalysis-note1-ref}
+%\bibliography{category-theory-note-ref}
+%\bibliographystyle{abbrv}
+\end{document}
